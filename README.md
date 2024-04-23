@@ -55,8 +55,8 @@ To get this project up and running on your local machine, follow these steps:
 
    - `DATABASE_URL`: The URL to your database. Ensure it's a valid URL and not the placeholder `YOUR_MYSQL_URL_HERE`.
    - `NODE_ENV`: Set to `development`, `test`, or `production` depending on your environment.
-   - `NEXTAUTH_SECRET`: A secret key for NextAuth.js, required in production. Refer to [Next-Auth Docs](https://next-auth.js.org/configuration/options#secret) for aquirement.
-   - `NEXTAUTH_URL`: The base URL of your site for NextAuth.js callbacks. If deploying on Vercel, this can be left as is to automatically use `VERCEL_URL`.
+   - `AUTH_SECRET`: A secret key for NextAuth.js, required in production. Refer to [Next-Auth Docs](https://next-auth.js.org/configuration/options#secret) for aquirement.
+   - `AUTH`: The base URL of your site for NextAuth.js callbacks. If deploying on Vercel, this can be left as is to automatically use `VERCEL_URL`.
    - `NEXT_PUBLIC_APP_URL`: The public-facing URL of your application.
 
    For more details on each environment variable and instructions on how to set them up, please refer to the [Environment Variables Setup Guide](https://github.com/SauceX22/airline-booking/wiki/Environment-Variables-Setup) on our GitHub wiki.

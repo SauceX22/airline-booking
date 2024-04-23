@@ -5,7 +5,7 @@ import { UserLoginForm } from "@/components/auth/user-login-form";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (session?.user) {
     redirect("/home");
@@ -47,7 +47,8 @@ export default async function LoginPage() {
         </div>
         <UserLoginForm />
         <p className="px-8 text-center text-sm text-muted-foreground">
-          <Link prefetch
+          <Link
+            prefetch
             href="/auth/register"
             className="hover:text-brand underline underline-offset-4"
           >

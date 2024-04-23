@@ -4,7 +4,7 @@ import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { type Metadata } from "next";
 import { unstable_noStore } from "next/cache";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export default async function HomePage({
   };
 }) {
   unstable_noStore();
-  const session = await getServerAuthSession();
+  const session = await auth();
   const isManager = session?.user.role === "ADMIN";
 
   return (

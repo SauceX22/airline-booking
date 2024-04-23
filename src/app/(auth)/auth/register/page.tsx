@@ -4,7 +4,7 @@ import { UserRegisterForm } from "@/components/auth/user-register-form";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 export default async function RegisterPage() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (session?.user) {
     redirect("/home");
