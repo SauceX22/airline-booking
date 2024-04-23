@@ -60,7 +60,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
 
           return (
             <DropdownMenuItem key={idx} asChild>
-              <Link prefetch href={{ href: item.href }}>
+              <Link prefetch href={item.href}>
                 {item.title}
               </Link>
             </DropdownMenuItem>

@@ -1,60 +1,28 @@
-import { type Metadata } from "next";
-import Link from "next/link";
-
-import { UserAuthLoginForm } from "@/components/auth/user-login-form";
-import { Icons } from "@/components/icons";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { auth } from "@/server/auth";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
-};
+import { auth } from "@/server/auth";
+import { UserAuthLoginForm } from "@/components/auth/user-login-form";
 
-export default async function LoginPage() {
+export default async function Dashboard() {
   const session = await auth();
 
-  if (session?.user) {
-    redirect("/home");
+  if (session) {
+    // Redirect to the page the user came from
+    return redirect("/dashboard");
   }
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Link
-        prefetch
-        href="/"
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "absolute left-4 top-4 md:left-8 md:top-8",
-        )}
-      >
-        <>
-          <Icons.chevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </>
-      </Link>
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <div className="flex flex-col space-y-2 text-center">
-          <Icons.logo className="mx-auto h-16 w-16" />
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
-          </p>
-        </div>
-        <UserAuthLoginForm />
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          <Link
-            prefetch
-            href="#"
-            className="hover:text-brand underline underline-offset-4"
-          >
-            Don&apos;t have an account? Sign Up
-          </Link>
-        </p>
+    <div className="h-screen w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+      <UserAuthLoginForm />
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="/placeholder.svg"
+          alt="Image"
+          width="1920"
+          height="1080"
+          className="h-full w-full rounded-l-2xl object-cover dark:brightness-[0.2] dark:grayscale"
+        />
       </div>
     </div>
   );
