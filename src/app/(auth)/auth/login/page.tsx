@@ -49,7 +49,7 @@ export default async function LoginPage() {
         <p className="px-8 text-center text-sm text-muted-foreground">
           <Link
             prefetch
-            href="/auth/register"
+            href="#"
             className="hover:text-brand underline underline-offset-4"
           >
             Don&apos;t have an account? Sign Up

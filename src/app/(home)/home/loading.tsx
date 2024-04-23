@@ -7,7 +7,7 @@ export default function DashboardLoading() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Bikes" text="Create and manage bikes.">
-        <Link prefetch href="/bikes/create">
+        <Link prefetch href="#">
           Create bike
         </Link>
       </DashboardHeader>
