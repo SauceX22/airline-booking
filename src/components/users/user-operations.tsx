@@ -39,23 +39,6 @@ export function UserOperations({ user, className }: UserOperationsProps) {
   const apiUtils = api.useUtils();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const { mutateAsync: setUserEnabledStatus } =
-    api.user.setUserEnabledStatus.useMutation({
-      onError(err) {
-        toast.error("Something went wrong.", {
-          description: err.message,
-        });
-      },
-      async onSuccess(data, variables, context) {
-        toast.success("User updated", {
-          description: `User *${user.name}* enabled status updated to ${data.enabled} successfully.`,
-        });
-
-        await apiUtils.user.invalidate();
-        router.refresh();
-      },
-    });
-
   const { mutateAsync: deleteUser } = api.user.deleteUser.useMutation({
     onError(err) {
       toast.error("Something went wrong.", {
@@ -86,10 +69,10 @@ export function UserOperations({ user, className }: UserOperationsProps) {
           <DropdownMenuCheckboxItem
             checked={user.enabled}
             onClick={async () => {
-              await setUserEnabledStatus({
-                id: user.id,
-                enabled: !user.enabled,
-              });
+              // await setUserEnabledStatus({
+              //   id: user.id,
+              //   enabled: !user.enabled,
+              // });
             }}
           >
             Enabled
