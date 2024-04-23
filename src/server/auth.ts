@@ -24,32 +24,6 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  callbacks: {
-    session: async ({ session }) => {
-      if (!session.user.email) {
-        throw new Error("Session token is invalid");
-      }
-      const user = await db.user.findUnique({
-        where: {
-          email: session.user.email,
-        },
-      });
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      return {
-        expires: session.expires,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
-        },
-      };
-    },
-  },
   secret: env.AUTH_SECRET,
   debug: env.NODE_ENV === "development",
   pages: {
