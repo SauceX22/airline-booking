@@ -19,7 +19,7 @@ export const UserAuthLoginForm = () => {
   //     const signInResult = await signIn("email", {
   //       email: data.email.toLowerCase(),
   //       redirect: false,
-  //       callbackUrl: searchParams?.get("from") || "/dashboard",
+  //       callbackUrl: searchParams?.get("from") || "/home",
   //     })
 
   //     setIsLoading(false)
