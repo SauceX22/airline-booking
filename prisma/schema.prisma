@@ -1,3 +1,30 @@
+// In this project you will develop a database system for the Airline booking system. Your finished product should contain information about passenger, flights, payments, bags etc.  
+// Each project group should go through the following steps in completing the phase 1 of the project:  
+// 1.	Describe constraints, including business related, and technical constraints, such as primary keys, foreign keys, check constraints, and not null constraints, for the tables and attributes, etc.  
+// 2.	Design the database, following an EER approach; then go through the normalization process to come up with a collection of tables that are in Third normal forms.   
+// 3.	Use any SQL database to create the normalized tables.  
+// 4.	Find out how the most recent version of your database implements the concept of triggers and then create at least one trigger for your database. For example, one such trigger could be that someone wants to book flight, your trigger must create ticket id automatically.   
+// 5.	Populate the database by using SQL insert statements or with some GUI interface such as PhpMySQLAdmin in case you are using MySQL.  
+
+// Database Systems Project (PHASE 1) High-Level Requirements   
+// Due: Saturday, March 23, 2024  
+// The list of requirements with constraints/business rules are as follows:  
+// a)	A passenger should be able to search flights by dates, destination and source city.  
+// b)	Each ticket will have a unique identification number and other details including flight dates, weight, time etc.  
+// c)	Passenger can book a seat if it is not booked already. 
+// d)	The system maintains information of assigned plane for a flight. The planes have various attributes including aircraft type, date of first flight, total seats, last and next dates for maintenance etc. The aircraft details are maintained separately including aircraft type, number of seats in first class, business class and economy and price of seats for each class.   
+// e)	The system also maintains waitlisted passengers up to 10 seats in economy and 3 in other classes.  
+// f)	There should be a maximum limit (10) seats to be booked by passenger at any time in specific flight.  
+// g)	There should be a maximum limit (90) on how many days a member can reuse ticket whenever miss his/her flight.  
+// h)	The system should identify fines for cancelation or missing flight.  
+// i)	The system should be able to send notifications whenever the seat booked and ticket successfully purchased.  
+// j)	Every passenger’s payment details should be kept.  
+
+// We have three main actors in our system:  
+// •	Admin: Mainly responsible for adding and modifying tickets.  
+// •	Passenger: All passengers can search the flight, destination and source, purchase ticket, postponed/cancel their flight, book seats etc.  
+// •	System: Mainly responsible for sending notifications etc.  
+
 generator client {
     provider        = "prisma-client-js"
     previewFeatures = ["relationJoins"]
@@ -36,8 +63,13 @@ model Session {
 }
 
 enum UserRole {
-    MANAGER
+    ADMIN
     USER
+}
+
+enum Gender {
+    MALE
+    FEMALE
 }
 
 model User {
@@ -52,41 +84,58 @@ model User {
     joinedAt DateTime @default(now())
     enabled  Boolean  @default(true)
 
-    role         UserRole      @default(USER)
-    reservations Reservation[]
-    bikes        Bike[]
+    role    UserRole @default(USER)
+    address String
+    age     Int
+    gender  Gender
+    fine    Int      @default(0) // passenger only
+
+    Tickets Ticket[]
 }
 
-model Bike {
-    id       String @id @default(cuid())
-    name     String
-    model    String
-    color    String
-    location String
+model Plane {
+    id                  String   @id @default(cuid())
+    nEconomySeats       Int
+    nBusinessSeats      Int
+    nFirstClassSeats    Int
+    type                String
+    lastMaintenanceDate DateTime
+    firstFlightDate     DateTime
 
-    averageRating Float   @default(0)
-    available     Boolean @default(true)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
-    createdById String
-
-    reservations Reservation[]
+    Flights Flight[]
 }
 
-model Reservation {
-    id        String   @id @default(cuid())
-    startDate DateTime
-    endDate   DateTime
-    rating    Int?
+model Flight {
+    id   String   @id @default(cuid())
+    date DateTime
 
-    bike   Bike   @relation(fields: [bikeId], references: [id], onDelete: Cascade)
-    bikeId String
+    source      String
+    destination String
 
-    reservedBy   User   @relation(fields: [reservedById], references: [id], onDelete: Cascade)
-    reservedById String
+    Plane   Plane  @relation(fields: [planeId], references: [id], onDelete: Cascade)
+    planeId String
 
-    @@unique([bikeId, startDate, endDate])
+    Tickets Ticket[]
+}
+
+enum PaymentStatus {
+    CONFIRMED
+    PENDING
+}
+
+model Ticket {
+    id          String   @id @default(cuid())
+    weightKG    Int
+    bookingDate DateTime
+    seat        String
+
+    paymentStatus PaymentStatus
+    paymentDate   DateTime?
+    price         Int
+
+    Flight   Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
+    flightId String
+
+    BookedBy   User   @relation(fields: [bookedById], references: [id], onDelete: Cascade)
+    bookedById String
 }
