@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import Link from "next/link";
 
-import { UserLoginForm } from "@/components/auth/user-login-form";
+import { UserAuthLoginForm } from "@/components/auth/user-login-form";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ export default async function LoginPage() {
             Enter your email to sign in to your account
           </p>
         </div>
-        <UserLoginForm />
+        <UserAuthLoginForm />
         <p className="px-8 text-center text-sm text-muted-foreground">
           <Link
             prefetch
