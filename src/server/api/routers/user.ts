@@ -20,7 +20,7 @@ export const userRouter = createTRPCRouter({
       });
 
       if (exists) {
-        // check if the user has a password, if not, they have been created by the manager...
+        // check if the user has a password, if not, they have been created by the admin...
         // ...and should be able to register by simply setting their name and password
         const isManuallyCreated = !exists?.passwordHash;
         if (isManuallyCreated) {
@@ -73,20 +73,7 @@ export const userRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.db.user.findUnique({ where: { id: input.id } });
     }),
-  getUserWithReservations: protectedManagerProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.user.findUnique({
-        where: { id: input.id },
-        include: {
-          reservations: {
-            include: {
-              bike: true,
-            },
-          },
-        },
-      });
-    }),
+
   addUser: protectedManagerProcedure
     .input(
       z.object({

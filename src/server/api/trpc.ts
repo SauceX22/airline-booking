@@ -102,7 +102,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 
 /** Reusable middleware that enforces users are managers before running the procedure. */
 export const protectedManagerProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session?.user || ctx.session.user.role !== "MANAGER") {
+  if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

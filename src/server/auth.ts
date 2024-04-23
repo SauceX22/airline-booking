@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type UserRole } from "@prisma/client";
+import { type User } from "@prisma/client";
 import {
   getServerSession,
   type DefaultSession,
@@ -22,17 +22,6 @@ import { decode, encode } from "next-auth/jwt";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: User;
-  }
-
-  interface User {
-    id: string;
-    name: string | null;
-    email: string;
-    image: string | null;
-    joinedAt: Date;
-    enabled: boolean;
-
-    role: UserRole;
   }
 }
 

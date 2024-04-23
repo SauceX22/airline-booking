@@ -27,7 +27,7 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
       : defaultImage;
   }, [user.name]);
 
-  const isManager = user.role === "MANAGER";
+  const isManager = user.role === "ADMIN";
 
   return (
     <Avatar

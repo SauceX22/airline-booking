@@ -140,8 +140,8 @@ const UserEditSection = ({ user, className }: Props) => {
                 className="w-full"
               >
                 {user.role === "USER"
-                  ? "User is not a Manager"
-                  : "User is a Manager"}
+                  ? "User is not a Admin"
+                  : "User is a Admin"}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -165,7 +165,7 @@ const UserEditSection = ({ user, className }: Props) => {
                     if (user.role === "USER") {
                       await setUserRoleStatus({
                         id: user.id,
-                        role: "MANAGER",
+                        role: "ADMIN",
                       });
                     } else {
                       await setUserRoleStatus({
@@ -175,7 +175,7 @@ const UserEditSection = ({ user, className }: Props) => {
                     }
                   }}
                 >
-                  {user.role === "USER" ? "Make Manager" : "Make User"}
+                  {user.role === "USER" ? "Make Admin" : "Make User"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

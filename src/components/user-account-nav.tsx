@@ -30,9 +30,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
       <DropdownMenuContent
         align="end"
         className={
-          user.role === "MANAGER"
-            ? "border border-dashed border-orange-500"
-            : ""
+          user.role === "ADMIN" ? "border border-dashed border-orange-500" : ""
         }
       >
         <div className="flex items-center justify-start gap-2 p-2">
@@ -47,7 +45,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
               variant="default"
               className={cn(
                 "flex justify-center items-center rounded-md text-xs w-full flex-shrink-0 py-1 pointer-events-none",
-                user.role === "MANAGER" ? "bg-orange-500" : "",
+                user.role === "ADMIN" ? "bg-orange-500" : "",
               )}
             >
               {user.role}
@@ -56,7 +54,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         </div>
         <DropdownMenuSeparator />
         {dashboardConfig.sidebarNav.map((item, idx) => {
-          if (item.managerOnly && user.role !== "MANAGER") {
+          if (item.managerOnly && user.role !== "ADMIN") {
             return null;
           }
 

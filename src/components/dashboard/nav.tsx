@@ -23,7 +23,7 @@ export function DashboardNav({ items }: DashboardNavProps) {
   return (
     <nav className="grid items-start gap-1">
       {items.map((item, index) => {
-        if (item.managerOnly && session?.user.role !== "MANAGER") {
+        if (item.managerOnly && session?.user.role !== "ADMIN") {
           return null;
         }
 

@@ -2,8 +2,8 @@
 
 ## Overview
 
-React Bike Rentals is a dynamic web application designed to facilitate the process of renting bikes. Built with the T3 Stack, this project leverages a suite of modern technologies to deliver a seamless and intuitive user experience. 
-The application caters to two user roles: **Manager** and **User**, each with distinct functionalities tailored to their needs.
+React Bike Rentals is a dynamic web application designed to facilitate the process of renting bikes. Built with the T3 Stack, this project leverages a suite of modern technologies to deliver a seamless and intuitive user experience.
+The application caters to two user roles: **Admin** and **User**, each with distinct functionalities tailored to their needs.
 
 ## Features
 
@@ -31,8 +31,9 @@ The application caters to two user roles: **Manager** and **User**, each with di
 
 Access our live demo with the following credentials:
 
-- **Manager Account**
-  - Email: `manager@gmail.com`
+- **Admin Account**
+
+  - Email: `admin@gmail.com`
   - Password: `123456`
 
 - **User Account**
@@ -51,6 +52,7 @@ To get this project up and running on your local machine, follow these steps:
 1. **Clone the repository**: `git clone https://github.com/SauceX22/airline-booking.git`
 2. **Install dependencies**: Navigate to the project directory and run `npm install`.
 3. **Set up environment variables**: Before starting the development server, you need to configure the environment variables defined in `env.mjs`. Create a `.env.local` file in the root of your project and define the following variables:
+
    - `DATABASE_URL`: The URL to your database. Ensure it's a valid URL and not the placeholder `YOUR_MYSQL_URL_HERE`.
    - `NODE_ENV`: Set to `development`, `test`, or `production` depending on your environment.
    - `NEXTAUTH_SECRET`: A secret key for NextAuth.js, required in production. Refer to [Next-Auth Docs](https://next-auth.js.org/configuration/options#secret) for aquirement.

@@ -1,11 +1,8 @@
-import { BikeItem } from "@/components/bike-item";
-import FilterHeader from "@/components/bikes/filter-header";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getFilteredBikes } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { getServerAuthSession } from "@/server/auth";
 import { type Metadata } from "next";
@@ -28,11 +25,7 @@ export default async function HomePage({
 }) {
   unstable_noStore();
   const session = await getServerAuthSession();
-  const isManager = session?.user.role === "MANAGER";
-
-  const filteredBikes = await getFilteredBikes(searchParams, {
-    availableOnly: true,
-  });
+  const isManager = session?.user.role === "ADMIN";
 
   return (
     <DashboardShell>
@@ -42,13 +35,13 @@ export default async function HomePage({
         </Link>
       </DashboardHeader>
       <div className="px-2">
-        <FilterHeader />
+        {/* <FilterHeader /> */}
         <Separator className="my-4" />
-        {filteredBikes?.length ? (
+        {[]?.length ? (
           <div className="grid gap-4 grid-cols-3">
-            {filteredBikes.map((bike) => (
+            {/* {filteredBikes.map((bike) => (
               <BikeItem key={bike.id} bike={bike} />
-            ))}
+            ))} */}
           </div>
         ) : (
           <div

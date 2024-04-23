@@ -181,7 +181,7 @@ export default function AddUserButton() {
                         <SelectGroup>
                           <SelectLabel>User Role</SelectLabel>
                           <SelectItem value="USER">User</SelectItem>
-                          <SelectItem value="MANAGER">Manager</SelectItem>
+                          <SelectItem value="ADMIN">Admin</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
