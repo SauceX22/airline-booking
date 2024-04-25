@@ -1,7 +1,7 @@
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { UserNameForm } from "@/components/user-name-form";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/auth/login");

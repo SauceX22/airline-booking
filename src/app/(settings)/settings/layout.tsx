@@ -5,7 +5,7 @@ import { MainNav } from "@/components/main-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { dashboardConfig } from "@/config/dashboard";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -14,7 +14,7 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/auth/login");
