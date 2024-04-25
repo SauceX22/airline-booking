@@ -38,11 +38,7 @@ export function UserItem({ user }: UserItemProps) {
       </CardContent>
       <CardFooter className="p-4">
         {/* <UserOperations user={user} className="my-auto" /> */}
-        <Link
-          prefetch
-          href={`/users/${user.id}`}
-          className={cn(buttonVariants(), "w-full")}
-        >
+        <Link prefetch href="#" className={cn(buttonVariants(), "w-full")}>
           View
         </Link>
       </CardFooter>

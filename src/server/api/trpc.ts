@@ -11,8 +11,8 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { auth } from "@/server/auth";
 
 /**
  * 1. CONTEXT
@@ -27,7 +27,7 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   return {
     db,
@@ -102,7 +102,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 
 /** Reusable middleware that enforces users are managers before running the procedure. */
 export const protectedManagerProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session?.user || ctx.session.user.role !== "MANAGER") {
+  if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

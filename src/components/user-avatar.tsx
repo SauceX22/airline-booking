@@ -27,13 +27,13 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
       : defaultImage;
   }, [user.name]);
 
-  const isManager = user.role === "MANAGER";
+  const isAdmin = user.role === "ADMIN";
 
   return (
     <Avatar
       {...props}
       className={
-        isManager
+        isAdmin
           ? "outline-2 outline-offset-2 outline-dashed outline-orange-500"
           : ""
       }

@@ -23,14 +23,14 @@ export function DashboardNav({ items }: DashboardNavProps) {
   return (
     <nav className="grid items-start gap-1">
       {items.map((item, index) => {
-        if (item.managerOnly && session?.user.role !== "MANAGER") {
+        if (item.managerOnly && session?.user.role !== "ADMIN") {
           return null;
         }
 
         const Icon = Icons[item.icon ?? "arrowRight"];
         return (
           item.href && (
-            <Link prefetch key={index} href={item.disabled ? "/" : item.href}>
+            <Link prefetch key={index} href={item.disabled ? "#" : item.href}>
               <span
                 className={cn(
                   "group flex items-center rounded-md px-3 py-3 text-base font-medium hover:bg-accent hover:text-accent-foreground",

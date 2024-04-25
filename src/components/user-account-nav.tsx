@@ -1,6 +1,5 @@
 "use client";
 
-import { type User } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/user-avatar";
 import { dashboardConfig } from "@/config/dashboard";
+import type { User } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -30,9 +30,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
       <DropdownMenuContent
         align="end"
         className={
-          user.role === "MANAGER"
-            ? "border border-dashed border-orange-500"
-            : ""
+          user.role === "ADMIN" ? "border border-dashed border-orange-500" : ""
         }
       >
         <div className="flex items-center justify-start gap-2 p-2">
@@ -46,8 +44,8 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             <Badge
               variant="default"
               className={cn(
-                "flex justify-center items-center rounded-md text-xs w-full flex-shrink-0 py-1 pointer-events-none",
-                user.role === "MANAGER" ? "bg-orange-500" : "",
+                "flex justify-center items-center w-full rounded-md text-xs flex-shrink-0 py-1 pointer-events-none",
+                user.role === "ADMIN" ? "bg-orange-500" : "",
               )}
             >
               {user.role}
@@ -56,7 +54,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         </div>
         <DropdownMenuSeparator />
         {dashboardConfig.sidebarNav.map((item, idx) => {
-          if (item.managerOnly && user.role !== "MANAGER") {
+          if (item.managerOnly && user.role !== "ADMIN") {
             return null;
           }
 

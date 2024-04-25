@@ -1,0 +1,5 @@
+- why store flight (id) not all flights (array) in plane?
+- why store first flight date in plane? you can get it by filtering the array of flights
+- why store the ticket time??? its reusable for 90 days so only store days
+- what is the date on the ticket for?
+- why tf are you storing card details and nothing about the payment itself? like state (confirmed, pending), date of payment, amount. none of card details are needed nor usefull, nor should be stored
