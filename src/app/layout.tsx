@@ -15,9 +15,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Bike Rental Shop",
-  description: "Rent a bike today!",
-  icons: [{ rel: "icon", url: "/tabicon.svg" }],
+  title: "Airline Booking",
+  description: "Book your flight today with our airline booking system.",
+  icons: [{ rel: "icon", url: "/favicon.svg" }],
 };
 
 export default function RootLayout({
