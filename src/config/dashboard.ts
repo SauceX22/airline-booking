@@ -14,20 +14,20 @@ export const dashboardConfig: DashboardConfig = {
       icon: "home",
     },
     {
-      title: "Bikes",
-      href: "/bikes",
-      icon: "bike",
-      managerOnly: true,
-    },
-    {
-      title: "Reservations",
-      href: "/reservations",
-      icon: "reservation",
+      title: "Tickets",
+      href: "/tickets",
+      icon: "ticket",
     },
     {
       title: "Users",
       href: "/users",
       icon: "user",
+      managerOnly: true,
+    },
+    {
+      title: "Flights",
+      href: "/flights",
+      icon: "logo",
       managerOnly: true,
     },
     {

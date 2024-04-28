@@ -1,4 +1,5 @@
 import { type Icons } from "@/components/icons";
+import { type LucideIcon } from "lucide-react";
 
 export type NavItem = {
   title: string;
