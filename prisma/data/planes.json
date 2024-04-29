@@ -1,0 +1,192 @@
+[
+  {
+    "id": "49b7a1e2-86ba-5278-b85c-020dd5e2b7f8",
+    "name": "Boeing 737",
+    "nEconomySeats": 150,
+    "nBusinessSeats": 16,
+    "nFirstClassSeats": 8,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-03-15T00:00:00Z",
+    "firstFlightDate": "2008-04-09T00:00:00Z"
+  },
+  {
+    "id": "c21eb940-0afc-58da-a36a-078c5e886d2a",
+    "name": "Airbus A320",
+    "nEconomySeats": 180,
+    "nBusinessSeats": 20,
+    "nFirstClassSeats": 10,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-02-28T00:00:00Z",
+    "firstFlightDate": "2014-02-22T00:00:00Z"
+  },
+  {
+    "id": "de1ad48a-3f3c-5f80-b173-935f3f0dbd7b",
+    "name": "Boeing 777",
+    "nEconomySeats": 314,
+    "nBusinessSeats": 58,
+    "nFirstClassSeats": 10,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-04-10T00:00:00Z",
+    "firstFlightDate": "2010-06-12T00:00:00Z"
+  },
+  {
+    "id": "19a8805c-f5a1-5b33-a961-014bacfa4278",
+    "name": "Airbus A380",
+    "nEconomySeats": 555,
+    "nBusinessSeats": 60,
+    "nFirstClassSeats": 12,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-01-20T00:00:00Z",
+    "firstFlightDate": "2005-04-27T00:00:00Z"
+  },
+  {
+    "id": "889f220b-963c-5b82-9a43-12507078790e",
+    "name": "Boeing 747",
+    "nEconomySeats": 416,
+    "nBusinessSeats": 66,
+    "nFirstClassSeats": 14,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-04-05T00:00:00Z",
+    "firstFlightDate": "2015-02-09T00:00:00Z"
+  },
+  {
+    "id": "bd1fb004-848f-5701-af7a-8c29326ca0a1",
+    "name": "Airbus A330",
+    "nEconomySeats": 250,
+    "nBusinessSeats": 36,
+    "nFirstClassSeats": 8,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-03-20T00:00:00Z",
+    "firstFlightDate": "2019-11-02T00:00:00Z"
+  },
+  {
+    "id": "f1439aca-e606-507b-ab11-d1441e3a72b6",
+    "name": "Boeing 787",
+    "nEconomySeats": 242,
+    "nBusinessSeats": 32,
+    "nFirstClassSeats": 8,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-02-15T00:00:00Z",
+    "firstFlightDate": "2009-12-15T00:00:00Z"
+  },
+  {
+    "id": "875bcfa8-0701-561f-8103-9c8200fe6ca5",
+    "name": "Embraer E190",
+    "nEconomySeats": 96,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Regional Jet",
+    "lastMaintenanceDate": "2024-03-30T00:00:00Z",
+    "firstFlightDate": "2004-03-12T00:00:00Z"
+  },
+  {
+    "id": "d9b93ee0-c5ca-50d7-a96f-2746b1bf57f7",
+    "name": "Bombardier CRJ900",
+    "nEconomySeats": 76,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Regional Jet",
+    "lastMaintenanceDate": "2024-04-18T00:00:00Z",
+    "firstFlightDate": "2003-02-21T00:00:00Z"
+  },
+  {
+    "id": "badb3ba7-1cb6-5a05-9852-736e57249823",
+    "name": "Airbus A350",
+    "nEconomySeats": 300,
+    "nBusinessSeats": 40,
+    "nFirstClassSeats": 10,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-01-25T00:00:00Z",
+    "firstFlightDate": "2013-06-14T00:00:00Z"
+  },
+  {
+    "id": "a2f4abb5-63d0-5fc0-8aa8-933453c3a423",
+    "name": "Boeing 767",
+    "nEconomySeats": 218,
+    "nBusinessSeats": 30,
+    "nFirstClassSeats": 10,
+    "type": "Wide-body",
+    "lastMaintenanceDate": "2024-02-10T00:00:00Z",
+    "firstFlightDate": "2015-09-26T00:00:00Z"
+  },
+  {
+    "id": "039b18d4-8167-5a08-b338-f0648b47e9be",
+    "name": "Embraer E175",
+    "nEconomySeats": 76,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Regional Jet",
+    "lastMaintenanceDate": "2024-03-05T00:00:00Z",
+    "firstFlightDate": "2003-06-14T00:00:00Z"
+  },
+  {
+    "id": "efaffcfb-2dbc-5eea-8cab-0a4931830e09",
+    "name": "Bombardier Q400",
+    "nEconomySeats": 74,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Turboprop",
+    "lastMaintenanceDate": "2024-04-25T00:00:00Z",
+    "firstFlightDate": "2000-02-01T00:00:00Z"
+  },
+  {
+    "id": "7474c1f4-f7bd-5a52-a14c-ac66eb9d0a8b",
+    "name": "Boeing 717",
+    "nEconomySeats": 110,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-03-12T00:00:00Z",
+    "firstFlightDate": "2016-09-02T00:00:00Z"
+  },
+  {
+    "id": "df60afd0-ae84-5683-8366-a01e916dd5de",
+    "name": "Airbus A319",
+    "nEconomySeats": 128,
+    "nBusinessSeats": 16,
+    "nFirstClassSeats": 8,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-04-20T00:00:00Z",
+    "firstFlightDate": "2011-08-25T00:00:00Z"
+  },
+  {
+    "id": "b1729be8-3810-5a45-ab6c-1a8f55c5b896",
+    "name": "Embraer E195",
+    "nEconomySeats": 120,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Regional Jet",
+    "lastMaintenanceDate": "2024-02-28T00:00:00Z",
+    "firstFlightDate": "2004-12-07T00:00:00Z"
+  },
+  {
+    "id": "17e5d697-fe8c-5553-9c9e-dc22e93dd670",
+    "name": "Bombardier CRJ700",
+    "nEconomySeats": 70,
+    "nBusinessSeats": 0,
+    "nFirstClassSeats": 0,
+    "type": "Regional Jet",
+    "lastMaintenanceDate": "2024-03-15T00:00:00Z",
+    "firstFlightDate": "2001-07-27T00:00:00Z"
+  },
+  {
+    "id": "f01523ea-638c-5f31-bb1f-3e26e9491214",
+    "name": "Boeing 757",
+    "nEconomySeats": 200,
+    "nBusinessSeats": 24,
+    "nFirstClassSeats": 8,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-01-10T00:00:00Z",
+    "firstFlightDate": "2014-02-19T00:00:00Z"
+  },
+  {
+    "id": "23a482af-7ef0-5dc0-8e7e-bc6b07003ac2",
+    "name": "Airbus A321",
+    "nEconomySeats": 220,
+    "nBusinessSeats": 28,
+    "nFirstClassSeats": 12,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-04-05T00:00:00Z",
+    "firstFlightDate": "2018-03-11T00:00:00Z"
+  }
+]

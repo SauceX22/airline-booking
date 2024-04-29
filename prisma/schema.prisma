@@ -95,6 +95,7 @@ model User {
 
 model Plane {
     id                  String   @id @default(cuid())
+    name                String
     nEconomySeats       Int
     nBusinessSeats      Int
     nFirstClassSeats    Int
@@ -106,8 +107,10 @@ model Plane {
 }
 
 model Flight {
-    id   String   @id @default(cuid())
-    date DateTime
+    id       String   @id @default(cuid())
+    name     String
+    date     DateTime
+    duration Int // in minutes
 
     source      String
     destination String
@@ -116,6 +119,10 @@ model Flight {
     planeId String
 
     Tickets Ticket[]
+
+    @@index([source])
+    @@index([destination])
+    @@index([source, destination])
 }
 
 enum PaymentStatus {

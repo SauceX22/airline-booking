@@ -1,0 +1,307 @@
+[
+  {
+    "airline": "AMERICAN AIRLINES INC.",
+    "country": "U.S.A.",
+    "carrier-code": "AA"
+  },
+  {
+    "airline": "CONTINENTAL AIRLINES, INC.",
+    "country": "U.S.A.",
+    "carrier-code": "CO"
+  },
+  {
+    "airline": "DELTA AIR LINES, INC.",
+    "country": "U.S.A.",
+    "carrier-code": "DL"
+  },
+  {
+    "airline": "NORTHWEST AIRLINES, INC.",
+    "country": "U.S.A.",
+    "carrier-code": "NW"
+  },
+  {
+    "airline": "AIR CANADA",
+    "country": "CANADA",
+    "carrier-code": "AC"
+  },
+  {
+    "airline": "UNITED AIRLINES, INC.",
+    "country": "U.S.A.",
+    "carrier-code": "UA"
+  },
+  {
+    "airline": "LUFTHANSA CARGO AG.",
+    "country": "GERMANY",
+    "carrier-code": "LH"
+  },
+  {
+    "airline": "FEDEX",
+    "country": "U.S.A.",
+    "carrier-code": "FX"
+  },
+  {
+    "airline": "HONG KONG DRAGON AIRLINES LIMITED.",
+    "country": "HONG KONG",
+    "carrier-code": "KA"
+  },
+  {
+    "airline": "ALITALIA-COMPAGNIA AEREA ITALIANA S.P.",
+    "country": "ITALY",
+    "carrier-code": "AZ"
+  },
+  {
+    "airline": "AIR FRANCE",
+    "country": "FRANCE",
+    "carrier-code": "AF"
+  },
+  {
+    "airline": "AIR CALEDONIE INTERNATIONAL",
+    "country": "CALEDONIA",
+    "carrier-code": "SB"
+  },
+  {
+    "airline": "KLM ROYAL DUTCH AIRLINES",
+    "country": "NETHERLANDS",
+    "carrier-code": "KL"
+  },
+  {
+    "airline": "EGYPTAIR",
+    "country": "EGYPT",
+    "carrier-code": "MS"
+  },
+  {
+    "airline": "PHILIPPINE AIRLINES, INC.",
+    "country": "PHILIPPINES",
+    "carrier-code": "PR"
+  },
+  {
+    "airline": "QANTAS AIRWAYS LTD.",
+    "country": "AUSTRALIA",
+    "carrier-code": "QF"
+  },
+  {
+    "airline": "AIR NEW ZEALAND LTD.",
+    "country": "NEW ZEALAND",
+    "carrier-code": "NZ"
+  },
+  {
+    "airline": "IRAN-AIR",
+    "country": "IRAN",
+    "carrier-code": "IR"
+  },
+  {
+    "airline": "AIR INDIA LTD.",
+    "country": "INDIA",
+    "carrier-code": "AI"
+  },
+  {
+    "airline": "FINNAIR O/Y",
+    "country": "FINLAND",
+    "carrier-code": "AY"
+  },
+  {
+    "airline": "SCANDINAVIAN AIRLINES SYSTEM(SAS)",
+    "country": "SWEDEN",
+    "carrier-code": "SK"
+  },
+  {
+    "airline": "BRITISH AIRWAYS P.L.C.",
+    "country": "U.K.",
+    "carrier-code": "BA"
+  },
+  {
+    "airline": "GARUDA INDONESIA",
+    "country": "INDONESIA",
+    "carrier-code": "GA"
+  },
+  {
+    "airline": "JAPAN AIRLINES CO. LTD",
+    "country": "JAPAN",
+    "carrier-code": "JL"
+  },
+  {
+    "airline": "AEROMEXICO",
+    "country": "MEXICO",
+    "carrier-code": "AM"
+  },
+  {
+    "airline": "CATHAY PACIFIC AIRWAYS LTD.",
+    "country": "CHINA",
+    "carrier-code": "CX"
+  },
+  {
+    "airline": "CARGOLUX AIRLINES INT'L S.A.",
+    "country": "LUXEMBURG",
+    "carrier-code": "CV"
+  },
+  {
+    "airline": "EMIRATES SKY CARGO",
+    "country": "U.A.E.",
+    "carrier-code": "EK"
+  },
+  {
+    "airline": "KOREAN AIR LINES CO.,LTD.",
+    "country": "KOREA",
+    "carrier-code": "KE"
+  },
+  {
+    "airline": "ALL NIPPON AIRWAYS CO., LTD.",
+    "country": "JAPAN",
+    "carrier-code": "NH"
+  },
+  {
+    "airline": "PAKISTAN INT'L AIRLINES",
+    "country": "PAKISTAN",
+    "carrier-code": "PK"
+  },
+  {
+    "airline": "THAI AIRWAYS INT'L PUBLIC CO.,LTD.",
+    "country": "THAILAND",
+    "carrier-code": "TG"
+  },
+  {
+    "airline": "MALAYSIA AIRLINES SYSTEM BERHAD",
+    "country": "MALAYSIA",
+    "carrier-code": "MH"
+  },
+  {
+    "airline": "TURKISH AIRLINES INC.",
+    "country": "TURKEY",
+    "carrier-code": "TK"
+  },
+  {
+    "airline": "AIR TAHITI NUI",
+    "country": "TAHITI",
+    "carrier-code": "TN"
+  },
+  {
+    "airline": "UZBEKISTAN AIRWAYS",
+    "country": "UZBEKISTAN",
+    "carrier-code": "HY"
+  },
+  {
+    "airline": "AUSTRIAN AIRLINES AG",
+    "country": "AUSTRIA",
+    "carrier-code": "OS"
+  },
+  {
+    "airline": "AIR PACIFIC",
+    "country": "FIJI",
+    "carrier-code": "FJ"
+  },
+  {
+    "airline": "ROYAL NEPAL AIRLINES CORP.",
+    "country": "NEPAL",
+    "carrier-code": "RA"
+  },
+  {
+    "airline": "AHK AIR HONG KONG LTD.",
+    "country": "HONG KONG",
+    "carrier-code": "LD"
+  },
+  {
+    "airline": "MIAT-MONGOLIAN AIRLINES",
+    "country": "MONGOLIA",
+    "carrier-code": "OM"
+  },
+  {
+    "airline": "CHINA AIRLINES LTD",
+    "country": "TAIWAN",
+    "carrier-code": "CI"
+  },
+  {
+    "airline": "POLAR AIR CARGO INC.",
+    "country": "U.S.A.",
+    "carrier-code": "PO"
+  },
+  {
+    "airline": "UNITED PARCEL",
+    "country": "U.S.A.",
+    "carrier-code": "5X"
+  },
+  {
+    "airline": "AEROFLOT RUSSIAN AIRLINES",
+    "country": "RUSSIA",
+    "carrier-code": "SU"
+  },
+  {
+    "airline": "DALAVIA FAR EAST AIRWAYS",
+    "country": "RUSSIA",
+    "carrier-code": "H8"
+  },
+  {
+    "airline": "SRILANKAN AIRLINES LTD.",
+    "country": "SRI LANKA",
+    "carrier-code": "UL"
+  },
+  {
+    "airline": "SINGAPORE AIRLINES LTD.",
+    "country": "SINGAPORE",
+    "carrier-code": "SQ"
+  },
+  {
+    "airline": "AIR NIUGINI PTY LTD.",
+    "country": "NIUGINI",
+    "carrier-code": "PX"
+  },
+  {
+    "airline": "JAPAN ASIA AIRWAYS CO., LTD.",
+    "country": "JAPAN",
+    "carrier-code": "EG"
+  },
+  {
+    "airline": "EVA AIRWAYS CORP.",
+    "country": "TAIWAN",
+    "carrier-code": "BR"
+  },
+  {
+    "airline": "SWISS INT'L AIR LINES LTD.",
+    "country": "SWITZERLAND",
+    "carrier-code": "LX"
+  },
+  {
+    "airline": "VIETNAM AIRLINES",
+    "country": "VIETNAM",
+    "carrier-code": "VN"
+  },
+  {
+    "airline": "AIR NIPPON CO., LTD.",
+    "country": "JAPAN",
+    "carrier-code": "EL"
+  },
+  {
+    "airline": "SHANGHAI AIRLINES CO., LTD.",
+    "country": "CHINA",
+    "carrier-code": "FM"
+  },
+  {
+    "airline": "CHINA EASTERN AIRLINES",
+    "country": "CHINA",
+    "carrier-code": "MU"
+  },
+  {
+    "airline": "CHINA SOUTHERN AIRLINES",
+    "country": "CHINA",
+    "carrier-code": "CZ"
+  },
+  {
+    "airline": "VIRGIN ATLANTIC",
+    "country": "U.K.",
+    "carrier-code": "VS"
+  },
+  {
+    "airline": "NIPPON CARGO AIRLINES",
+    "country": "JAPAN",
+    "carrier-code": "KZ"
+  },
+  {
+    "airline": "ASIANA AIRLINES INC.",
+    "country": "KOREA",
+    "carrier-code": "OZ"
+  },
+  {
+    "airline": "AIR CHINA LTD.",
+    "country": "CHINA",
+    "carrier-code": "CA"
+  }
+]
