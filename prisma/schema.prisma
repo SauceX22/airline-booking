@@ -132,11 +132,18 @@ enum PaymentStatus {
     PENDING
 }
 
+enum SeatClass {
+    Economy
+    Business
+    FirstClass
+}
+
 model Ticket {
-    id          String   @id @default(cuid())
+    id          String    @id @default(cuid())
     weightKG    Int
     bookingDate DateTime
     seat        String
+    class       SeatClass
 
     paymentStatus PaymentStatus
     paymentDate   DateTime?
