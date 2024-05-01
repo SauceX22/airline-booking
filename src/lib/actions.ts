@@ -11,27 +11,33 @@ import { type z } from "zod";
  * read more about server actions here: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
  *
  * @param data The form data to be submitted
- * @param callbackUrl The url to redirect to after the search
+ * @param callbackPath The url to redirect to after the search
  * @returns void
  */
 export async function searchAction(
   data: z.infer<typeof filterFormSchema>,
-  callbackUrl: string,
+  callbackPath: string,
 ) {
-  let url = callbackUrl;
+  // dummy url to create the object (removed at the end)
+  const url = new URL("http://dummy.com" + callbackPath);
 
-  if (data.query) {
-    if (data.queryType) {
-      url += `?query=${data.query}&queryType=${data.queryType}`;
-    } else {
-      url += `?query=${data.query}&queryType=all`;
-    }
+  // set params
+  const current = url.searchParams;
+  if (data.source) current.set("source", data.source);
+  if (data.dest) current.set("dest", data.dest);
+  if (data.date) current.set("date", data.date.toISOString());
+  url.search = current.toString();
+
+  // remove empty params
+  const params = url.searchParams;
+  for (const [key, value] of params) {
+    if (!value || value === "" || value === "any") params.delete(key);
   }
 
-  if (data.doa?.from && data.doa?.to) {
-    url += `${data.query ? "&" : "?"}doaFrom=${data.doa.from.toISOString()}&doaTo=${data.doa.to.toISOString()}`;
-  }
-  return redirect(url);
+  // remove the dummy domain "http://dummy.com"
+  const redirectUrl = url.pathname + url.search;
+
+  return redirect(redirectUrl);
 }
 
 /**
