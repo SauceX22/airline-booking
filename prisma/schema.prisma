@@ -112,8 +112,10 @@ model Flight {
     date     DateTime
     duration Int // in minutes
 
-    source      String
-    destination String
+    source          String
+    sourceCode      String
+    destination     String
+    destinationCode String
 
     Plane   Plane  @relation(fields: [planeId], references: [id], onDelete: Cascade)
     planeId String
