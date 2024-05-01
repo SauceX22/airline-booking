@@ -9,7 +9,7 @@ const db = new PrismaClient();
 type AirlineData = {
   airline: string;
   country: string;
-  "carrier-code": string;
+  code: string;
 };
 
 function safeRandomPick<T>(arr: T[]): T {
@@ -70,7 +70,7 @@ function generateFlightName(airlinesData: AirlineData[]) {
   const randomAirlineData = safeRandomPick(airlinesData);
 
   // Extract airline code
-  const airlineCode = randomAirlineData["carrier-code"];
+  const airlineCode = randomAirlineData.code;
 
   // Generate a random flight number (1 to 9999)
   const flightNumber = Math.floor(Math.random() * 9999) + 1;
@@ -100,7 +100,7 @@ async function createPlanes() {
 
 async function createFlights() {
   const cities = (await import("./data/cities.json")).default; // returns [ "london", "paris", "new-york", ... ]
-  const airlines = (await import("./data/airlines.json")).default; // returns [ { "airline": "AMERICAN AIRLINES INC.", "country": "U.S.A.", "carrier-code": "AA" }, { ... }, { ... } ]
+  const airlines = (await import("./data/airlines.json")).default; // returns [ { "airline": "AMERICAN AIRLINES INC.", "country": "U.S.A.", "code": "AA" }, { ... }, { ... } ]
   const planes = await db.plane.findMany({
     select: { id: true },
   });
@@ -128,8 +128,10 @@ async function createFlights() {
     await db.flight.create({
       data: {
         name: flightName,
-        source: source,
-        destination: destination,
+        source: source.city,
+        sourceCode: source.code,
+        destination: destination.city,
+        destinationCode: destination.code,
         date: randDate,
         duration: randDuration,
         planeId: plane.id,
