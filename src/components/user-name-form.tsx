@@ -1,13 +1,13 @@
 "use client";
 
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type User } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import * as React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type z } from "zod";
 
-import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { userAuthRegisterSchema } from "@/lib/validations/auth";
 import { api } from "@/trpc/client";
-import { toast } from "sonner";
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
   user: Pick<User, "id" | "name">;
@@ -66,8 +66,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     <form
       className={cn(className)}
       onSubmit={handleSubmit(onSubmit)}
-      {...props}
-    >
+      {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Your Name</CardTitle>
@@ -96,8 +95,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
           <button
             type="submit"
             className={cn(buttonVariants(), className)}
-            disabled={isSaving}
-          >
+            disabled={isSaving}>
             {isSaving && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
