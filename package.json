@@ -2,11 +2,12 @@
   "name": "airline-booking",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "next build",
     "db:push": "dotenv -e .env.local -- npx prisma db push",
     "db:studio": "dotenv -e .env.local -- npx prisma studio",
-    "db:seed": "dotenv -e .env.local -- ts-node --project tsconfig.prisma.json prisma\\seed.ts",
+    "db:seed": "dotenv -e .env.local -- npx tsx prisma\\seed.ts",
     "dev": "next dev",
     "generate": "dotenv -e .env.local -- npx prisma generate",
     "postinstall": "npx prisma generate",
@@ -60,7 +61,7 @@
     "input-otp": "^1.2.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.372.0",
-    "next": "^14.2.2",
+    "next": "^14.2.3",
     "next-auth": "^5.0.0-beta.16",
     "next-intl": "^3.11.3",
     "next-themes": "^0.3.0",
@@ -101,6 +102,7 @@
     "tailwindcss": "^3.4.3",
     "tailwindcss-rtl": "^0.9.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.3",
     "typescript": "^5.4.5"
   },
   "ct3aMetadata": {
