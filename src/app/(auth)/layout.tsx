@@ -1,7 +1,13 @@
+import Providers from "@/components/providers";
+
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 export default async function AuthLayout({ children }: AuthLayoutProps) {
-  return <div className="min-h-screen">{children}</div>;
+  return (
+    <div className="min-h-screen">
+      <Providers>{children}</Providers>
+    </div>
+  );
 }
