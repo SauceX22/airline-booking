@@ -25,6 +25,9 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 202.2 47.4% 11.2%;
 
+    --success: 128 51% 55%;
+    --success-foreground: 0 0% 100%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 240 20% 98%;
 
@@ -57,6 +60,9 @@
     --accent: 230.2 46.6% 18.5%;
     --accent-foreground: 240 20% 98%;
 
+    --success: 128 51% 55%;
+    --success-foreground: 0 0% 100%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 240 20% 98%;
 
@@ -72,5 +78,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-inter), sans-serif;
   }
 }
