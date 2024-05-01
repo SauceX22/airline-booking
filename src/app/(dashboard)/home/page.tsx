@@ -4,6 +4,15 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
@@ -11,6 +20,7 @@ import FlightFilterHeader from "@/components/flight-filter-header";
 import { FlightItem } from "@/components/flights/flight-item";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { DEFAULT_PAGE_SIZE } from "@/server/api/routers/flight";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
@@ -18,8 +28,17 @@ export const metadata: Metadata = {
   title: "Home",
 };
 
+const spPageNumberSchema = z.coerce
+  .number()
+  .int()
+  .transform((page) =>
+    // clamp min to 0
+    page < 0 ? 0 : page
+  )
+  .default(0);
+
 export default async function HomePage({
-  searchParams,
+  searchParams: sp,
 }: {
   searchParams: {
     source?: string;
@@ -36,19 +55,52 @@ export default async function HomePage({
   }
 
   const filteredFlights = await api.flight.search.query({
-    source: searchParams.source,
-    dest: searchParams.dest,
-    date: searchParams.date,
-    page: searchParams.page,
-    pageSize: searchParams.pageSize,
+    source: sp.source,
+    dest: sp.dest,
+    date: sp.date,
+    page: sp.page,
+    pageSize: sp.pageSize,
   });
+
+  function getPrevPage() {
+    const validPageNumber = spPageNumberSchema.safeParse(sp.page);
+    if (!validPageNumber.success) return 0;
+    if (validPageNumber.data <= 0) return 0;
+    return validPageNumber.data - 1;
+  }
+
+  function getNextPage() {
+    const validPageNumber = spPageNumberSchema.safeParse(sp.page);
+    if (!validPageNumber.success) return 0;
+    return validPageNumber.data + 1;
+  }
 
   return (
     <DashboardShell>
       <DashboardHeader heading="Home" text="Flights available for rent.">
-        <Link prefetch href="/tickets" className={cn(buttonVariants())}>
-          Your Tickets
-        </Link>
+        <div className="flex items-center justify-end gap-2">
+          <Pagination>
+            <PaginationContent className="space-x-2">
+              <PaginationItem>
+                <PaginationPrevious
+                  isActive
+                  href={`/home?page=${getPrevPage()}`}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="w-fit text-nowrap">
+                  Page {(spPageNumberSchema.safeParse(sp.page).data ?? 0) + 1}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext isActive href={`/home?page=${getNextPage()}`} />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <Link prefetch href="/tickets" className={cn(buttonVariants())}>
+            Your Tickets
+          </Link>
+        </div>
       </DashboardHeader>
       <div className="px-2">
         <FlightFilterHeader />

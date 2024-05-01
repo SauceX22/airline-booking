@@ -8,7 +8,7 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 
-const DEFAULT_PAGE_SIZE = 9;
+export const DEFAULT_PAGE_SIZE = 9;
 
 export const flightRouter = createTRPCRouter({
   search: publicProcedure
@@ -17,7 +17,14 @@ export const flightRouter = createTRPCRouter({
         source: z.coerce.string().optional(),
         dest: z.coerce.string().optional(),
         date: z.coerce.string().datetime().optional(),
-        page: z.coerce.number().int().min(0).default(0),
+        page: z.coerce
+          .number()
+          .int()
+          .transform((page) =>
+            // clamp min to 0
+            page < 0 ? 0 : page
+          )
+          .default(0),
         pageSize: z.coerce.number().int().positive().default(DEFAULT_PAGE_SIZE),
       })
     )
