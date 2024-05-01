@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedManagerProcedure,
-  protectedProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const ticketRouter = createTRPCRouter({
   getUserTickets: protectedProcedure
@@ -20,7 +16,7 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
-  payTicket: protectedManagerProcedure
+  payTicket: protectedProcedure
     .input(
       z.object({
         ticketId: z.string(),
@@ -35,13 +31,13 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
-  deleteTicket: protectedManagerProcedure
+  deleteTicket: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
+        ticketId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.ticket.delete({ where: { id: input.id } });
+      return await ctx.db.ticket.delete({ where: { id: input.ticketId } });
     }),
 });

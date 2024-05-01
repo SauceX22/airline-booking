@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Home",
 };
 
-export default function DashboardLoading() {
+export default async function DashboardLoading() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Tickets" text="Tickets that you have booked." />

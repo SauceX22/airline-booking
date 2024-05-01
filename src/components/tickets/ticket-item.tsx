@@ -1,6 +1,3 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import { type Ticket } from "@prisma/client";
 import { format } from "date-fns";
 import {
@@ -10,10 +7,8 @@ import {
   LuggageIcon,
   TicketIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -23,51 +18,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
-import { auth } from "@/server/auth";
-import { api } from "@/trpc/client";
+import { TicketItemActions } from "@/components/tickets/ticket-actions";
 
 interface TicketItemProps {
   ticket: Ticket;
 }
 
-export async function TicketItem({ ticket }: TicketItemProps) {
-  const session = await auth();
-
-  const router = useRouter();
-  const apiUtils = api.useUtils();
-
-  const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
-    onError(err) {
-      toast.error("Something went wrong.", {
-        description: err.message,
-      });
-    },
-    async onSuccess(data, variables, context) {
-      toast.success("Ticket cancelled", {
-        description: "Ticket cancelled successfully.",
-      });
-
-      await apiUtils.ticket.invalidate();
-      router.refresh();
-    },
-  });
-
-  const { mutateAsync: payTicket } = api.ticket.payTicket.useMutation({
-    onError(err) {
-      toast.error("Something went wrong.", {
-        description: err.message,
-      });
-    },
-    async onSuccess(data, variables, context) {
-      toast.success("Ticket paid", {
-        description: "Ticket paid successfully.",
-      });
-
-      await apiUtils.ticket.invalidate();
-      router.refresh();
-    },
-  });
-
+export function TicketItem({ ticket }: TicketItemProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -91,7 +48,7 @@ export async function TicketItem({ ticket }: TicketItemProps) {
                 Flight Date
               </div>
               <div className="text-nowrap text-lg font-semibold">
-                {format(ticket.bookingDate, "MMM do, YYY")}
+                {format(ticket.bookingDate, "MMM do, yyy")}
               </div>
             </div>
           </div>
@@ -141,7 +98,7 @@ export async function TicketItem({ ticket }: TicketItemProps) {
                 </div>
                 <div className="text-nowrap text-lg font-semibold">
                   {ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
-                    ? format(ticket.paymentDate, "MMM do, YYY")
+                    ? format(ticket.paymentDate, "MMM do, yyy")
                     : "-"}
                 </div>
               </div>
@@ -161,20 +118,7 @@ export async function TicketItem({ ticket }: TicketItemProps) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-between gap-2 pt-4">
-        <Button
-          variant="destructive"
-          className="w-full"
-          onClick={async () => await cancelTicket({ id: ticket.id })}>
-          Cancel
-        </Button>
-        {ticket.paymentStatus === "PENDING" && (
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={async () => await payTicket({ ticketId: ticket.id })}>
-            Pay
-          </Button>
-        )}
+        <TicketItemActions ticket={ticket} />
       </CardFooter>
     </Card>
   );

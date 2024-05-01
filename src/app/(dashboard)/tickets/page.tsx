@@ -29,11 +29,7 @@ export default async function TicketsPage() {
 
   return (
     <DashboardShell>
-      <DashboardHeader heading="Tickets" text="Tickets available for rent.">
-        <Link prefetch href="/tickets" className={cn(buttonVariants())}>
-          Your Tickets
-        </Link>
-      </DashboardHeader>
+      <DashboardHeader heading="Tickets" text="Your booked tickets." />
       <Separator className="mb-4" />
       <div className="px-2">
         {userTickets.length ? (
