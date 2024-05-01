@@ -141,11 +141,11 @@ enum SeatClass {
 model Ticket {
     id          String    @id @default(cuid())
     weightKG    Int
-    bookingDate DateTime
+    bookingDate DateTime  @default(now())
     seat        String
-    class       SeatClass
+    class       SeatClass @default(Economy)
 
-    paymentStatus PaymentStatus
+    paymentStatus PaymentStatus @default(PENDING)
     paymentDate   DateTime?
     price         Int
 
