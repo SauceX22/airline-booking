@@ -18,7 +18,6 @@ export const metadata: Metadata = {
 
 export default async function TicketsPage() {
   const session = await auth();
-  const isAdmin = session?.user.role === "ADMIN";
 
   if (!session?.user) {
     redirect("/auth/login");

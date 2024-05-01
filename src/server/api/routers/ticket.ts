@@ -20,6 +20,21 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
+  payTicket: protectedManagerProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          paymentStatus: "CONFIRMED",
+          paymentDate: new Date(),
+        },
+      });
+    }),
   deleteTicket: protectedManagerProcedure
     .input(
       z.object({

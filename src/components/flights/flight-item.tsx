@@ -33,7 +33,6 @@ interface FlightItemProps {
 
 export async function FlightItem({ flight }: FlightItemProps) {
   const session = await auth();
-  const isAdmin = session?.user.role === "ADMIN";
 
   const seatsLeft =
     flight.Plane.nEconomySeats +

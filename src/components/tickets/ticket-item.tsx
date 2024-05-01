@@ -1,7 +1,19 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { type Ticket } from "@prisma/client";
-import { CircleCheck, TicketIcon } from "lucide-react";
+import { format } from "date-fns";
+import {
+  CircleCheck,
+  CircleDollarSignIcon,
+  CreditCardIcon,
+  LuggageIcon,
+  TicketIcon,
+} from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,7 +22,9 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Icons } from "@/components/icons";
 import { auth } from "@/server/auth";
+import { api } from "@/trpc/client";
 
 interface TicketItemProps {
   ticket: Ticket;
@@ -18,7 +32,41 @@ interface TicketItemProps {
 
 export async function TicketItem({ ticket }: TicketItemProps) {
   const session = await auth();
-  const isAdmin = session?.user.role === "ADMIN";
+
+  const router = useRouter();
+  const apiUtils = api.useUtils();
+
+  const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
+    onError(err) {
+      toast.error("Something went wrong.", {
+        description: err.message,
+      });
+    },
+    async onSuccess(data, variables, context) {
+      toast.success("Ticket cancelled", {
+        description: "Ticket cancelled successfully.",
+      });
+
+      await apiUtils.ticket.invalidate();
+      router.refresh();
+    },
+  });
+
+  const { mutateAsync: payTicket } = api.ticket.payTicket.useMutation({
+    onError(err) {
+      toast.error("Something went wrong.", {
+        description: err.message,
+      });
+    },
+    async onSuccess(data, variables, context) {
+      toast.success("Ticket paid", {
+        description: "Ticket paid successfully.",
+      });
+
+      await apiUtils.ticket.invalidate();
+      router.refresh();
+    },
+  });
 
   return (
     <Card className="w-full max-w-md">
@@ -28,61 +76,105 @@ export async function TicketItem({ ticket }: TicketItemProps) {
           <span className="text-xl font-semibold">Flight Details</span>
         </div>
         <Badge
-          className="pointer-events-none w-fit select-none gap-2 text-lg font-medium text-muted-foreground"
-          variant="default">
+          className="pointer-events-none w-fit select-none gap-1 px-1.5 text-sm font-medium"
+          variant="success">
           <CircleCheck className="h-4 w-4" />
           Confirmed
         </Badge>
       </CardHeader>
-      <CardContent className="grid gap-6 pb-4">
-        <div className="grid gap-2">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
+      <CardContent className="py-2">
+        <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2 sm:grid-rows-2">
+          <div className="flex w-full items-start justify-start space-x-3">
+            <Icons.flightDate className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+            <div className="flex w-fit flex-col items-start justify-start">
+              <div className="text-sm font-medium text-muted-foreground">
                 Flight Date
               </div>
-              <div>May 1, 2024</div>
+              <div className="text-nowrap text-lg font-semibold">
+                {format(ticket.bookingDate, "MMM do, YYY")}
+              </div>
             </div>
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
+          </div>
+          <div className="flex w-full items-start justify-start space-x-3">
+            <Icons.seat className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+            <div className="flex w-fit flex-col items-start justify-start">
+              <div className="text-sm font-medium text-muted-foreground">
                 Seat
               </div>
-              <div>12A</div>
+              <div className="text-nowrap text-xl font-semibold">
+                {ticket.seat}
+              </div>
             </div>
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
+          </div>
+          <div className="flex w-full items-start justify-start space-x-3">
+            <LuggageIcon className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+            <div className="flex w-fit flex-col items-start justify-start">
+              <div className="text-sm font-medium text-muted-foreground">
                 Weight
               </div>
-              <div>23 kg</div>
+              <div className="text-nowrap text-xl font-semibold">
+                {ticket.weightKG}
+              </div>
             </div>
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
+          </div>
+          <div className="flex w-full items-start justify-start space-x-3">
+            <CircleDollarSignIcon className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+            <div className="flex w-fit flex-col items-start justify-start">
+              <div className="text-sm font-medium text-muted-foreground">
                 Price
               </div>
-              <div>$499</div>
+              <div className="text-nowrap text-xl font-semibold">
+                {ticket.price}
+              </div>
+            </div>
+          </div>
+        </div>
+        <Separator className="my-4" />
+        <div className="grid gap-2">
+          <div className="text-lg font-medium">Payment</div>
+          <div className="grid gap-4 gap-x-8 gap-y-4 sm:grid-cols-2">
+            <div className="flex w-full items-start justify-start space-x-3">
+              <Icons.calendarPay className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+              <div className="flex w-fit flex-col items-start justify-start">
+                <div className="text-sm font-medium text-muted-foreground">
+                  Payment Date
+                </div>
+                <div className="text-nowrap text-lg font-semibold">
+                  {ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
+                    ? format(ticket.paymentDate, "MMM do, YYY")
+                    : "-"}
+                </div>
+              </div>
+            </div>
+            <div className="flex w-full items-start justify-start space-x-3">
+              <CreditCardIcon className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+              <div className="flex w-fit flex-col items-start justify-start">
+                <div className="text-sm font-medium text-muted-foreground">
+                  Status
+                </div>
+                <div className="text-nowrap text-xl font-semibold">
+                  {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </CardContent>
-      <Separator className="my-4" />
-      <CardFooter>
-        <div className="grid gap-2">
-          <div className="font-medium">Payment</div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
-                Payment Date
-              </div>
-              <div>May 1, 2024</div>
-            </div>
-            <div className="grid gap-1">
-              <div className="text-base text-gray-500 dark:text-gray-400">
-                Payment Status
-              </div>
-              <div>Paid</div>
-            </div>
-          </div>
-        </div>
+      <CardFooter className="flex flex-col items-center justify-between gap-2 pt-4">
+        <Button
+          variant="destructive"
+          className="w-full"
+          onClick={async () => await cancelTicket({ id: ticket.id })}>
+          Cancel
+        </Button>
+        {ticket.paymentStatus === "PENDING" && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={async () => await payTicket({ ticketId: ticket.id })}>
+            Pay
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

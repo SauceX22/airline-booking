@@ -30,7 +30,6 @@ export default async function HomePage({
   };
 }) {
   const session = await auth();
-  const isAdmin = session?.user.role === "ADMIN";
 
   if (!session?.user) {
     redirect("/auth/login");
