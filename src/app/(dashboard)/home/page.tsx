@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -31,6 +32,10 @@ export default async function HomePage({
   const session = await auth();
   const isAdmin = session?.user.role === "ADMIN";
 
+  if (!session?.user) {
+    redirect("/auth/login");
+  }
+
   const filteredFlights = await api.flight.search.query({
     source: searchParams.source,
     dest: searchParams.dest,
@@ -42,8 +47,8 @@ export default async function HomePage({
   return (
     <DashboardShell>
       <DashboardHeader heading="Home" text="Flights available for rent.">
-        <Link prefetch href="#" className={cn(buttonVariants())}>
-          Lookup Upcoming Flights
+        <Link prefetch href="/tickets" className={cn(buttonVariants())}>
+          Your Tickets
         </Link>
       </DashboardHeader>
       <div className="px-2">
