@@ -1,14 +1,20 @@
+import { SeatClass } from "@prisma/client";
 import { z } from "zod";
 
-export const addNewBikeSchema = z.object({
-  name: z.string().min(3).max(25),
-  model: z.string().min(3).max(25),
-  color: z.string().min(3).max(25),
-  location: z.string().min(3).max(25),
-  available: z.boolean().default(true),
+export const newBookingSchema = z.object({
+  passengers: z
+    .array(
+      z.object({
+        name: z.string().min(5).max(30),
+        email: z.string().email(),
+        seatClass: z.nativeEnum(SeatClass).default("ECONOMY"),
+      })
+    )
+    .min(1)
+    .max(10),
 });
 
-export const updateBikeSchema = addNewBikeSchema.partial();
+export const updateBookingSchema = newBookingSchema.partial();
 
 export const ratingSchema = z.coerce.number().int().min(1).max(5);
 

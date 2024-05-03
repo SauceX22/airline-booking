@@ -1,5 +1,5 @@
 import { isSameDay } from "date-fns";
-import { coerce, z } from "zod";
+import { z } from "zod";
 
 import {
   createTRPCRouter,
@@ -11,6 +11,22 @@ import {
 export const DEFAULT_PAGE_SIZE = 9;
 
 export const flightRouter = createTRPCRouter({
+  getFlight: protectedProcedure
+    .input(
+      z.object({
+        flightId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.flight.findUnique({
+        where: { id: input.flightId },
+
+        include: {
+          Tickets: { where: { bookedById: ctx.session.user.id } },
+          Plane: true,
+        },
+      });
+    }),
   search: publicProcedure
     .input(
       z.object({

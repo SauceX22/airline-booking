@@ -10,3 +10,23 @@ export const siteConfig: SiteConfig = {
     github: "https://github.com/SauceX22/airline-booking",
   },
 };
+
+export const ECONOMY_WEIGHT = 20;
+export const BUSINESS_WEIGHT = 50;
+export const FIRSTCLASS_WEIGHT = 100;
+
+export const ECONOMY_PRICE = 80;
+export const BUSINESS_PRICE = 200;
+export const FIRSTCLASS_PRICE = 300;
+
+export enum SeatClassWeightRestriction {
+  "ECONOMY" = ECONOMY_WEIGHT,
+  "BUSINESS" = BUSINESS_WEIGHT,
+  "FIRSTCLASS" = FIRSTCLASS_WEIGHT,
+}
+
+export enum SeatClassPriceRestriction {
+  "ECONOMY" = ECONOMY_PRICE,
+  "BUSINESS" = BUSINESS_PRICE,
+  "FIRSTCLASS" = FIRSTCLASS_PRICE,
+}
