@@ -33,10 +33,10 @@ import {
 } from "@/components/ui/select";
 import { searchAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
-import { filterFormSchema } from "@/lib/validations/general";
+import { flightFilterFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";
 
-type FormData = z.infer<typeof filterFormSchema>;
+type FormData = z.infer<typeof flightFilterFormSchema>;
 
 const FlightFilterHeader = () => {
   const searchParams = useSearchParams();
@@ -47,7 +47,7 @@ const FlightFilterHeader = () => {
   const dateSP = searchParams.get("date");
 
   const filterForm = useForm<FormData>({
-    resolver: zodResolver(filterFormSchema),
+    resolver: zodResolver(flightFilterFormSchema),
     defaultValues: {
       source: sourceSP ?? undefined,
       dest: destSP ?? undefined,
@@ -137,7 +137,7 @@ const FlightFilterHeader = () => {
                 {...field}
                 onValueChange={async (value) => {
                   const validatedValue =
-                    filterFormSchema.shape.source.safeParse(value);
+                    flightFilterFormSchema.shape.source.safeParse(value);
                   if (!validatedValue.success) return;
                   if (value === "any") {
                     filterForm.reset({ source: undefined });
@@ -174,7 +174,7 @@ const FlightFilterHeader = () => {
                 {...field}
                 onValueChange={async (value) => {
                   const validatedValue =
-                    filterFormSchema.shape.dest.safeParse(value);
+                    flightFilterFormSchema.shape.dest.safeParse(value);
                   if (!validatedValue.success) return;
                   if (value === "any") {
                     filterForm.reset({ dest: undefined });

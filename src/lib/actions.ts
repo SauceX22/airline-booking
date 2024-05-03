@@ -1,9 +1,10 @@
 "use server";
-import { type filterFormSchema } from "@/lib/validations/general";
-import { revalidatePath } from "next/cache";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { type z } from "zod";
+
+import { type flightFilterFormSchema } from "@/lib/validations/general";
 
 /**
  * Search server action to redirect to the callback url with the search params
@@ -15,8 +16,8 @@ import { type z } from "zod";
  * @returns void
  */
 export async function searchAction(
-  data: z.infer<typeof filterFormSchema>,
-  callbackPath: string,
+  data: z.infer<typeof flightFilterFormSchema>,
+  callbackPath: string
 ) {
   // dummy url to create the object (removed at the end)
   const url = new URL("http://dummy.com" + callbackPath);

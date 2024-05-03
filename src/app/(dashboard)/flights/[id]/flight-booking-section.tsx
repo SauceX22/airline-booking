@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { revalidatePathCache } from "@/lib/actions";
-import { newBookingSchema } from "@/lib/validations/general";
+import { newBookingFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";
 
 interface BookTicketSectionProps {
@@ -55,7 +55,7 @@ interface BookTicketSectionProps {
   existingUserTickets: Ticket[];
 }
 
-type FormData = z.infer<typeof newBookingSchema>;
+type FormData = z.infer<typeof newBookingFormSchema>;
 
 export function BookTicketSection({
   flight,
@@ -63,7 +63,7 @@ export function BookTicketSection({
 }: BookTicketSectionProps) {
   const { data: session } = useSession();
   const newBookingForm = useForm<FormData>({
-    resolver: zodResolver(newBookingSchema),
+    resolver: zodResolver(newBookingFormSchema),
     mode: "onChange",
     defaultValues: {
       passengers: [

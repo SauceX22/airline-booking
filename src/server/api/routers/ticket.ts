@@ -5,23 +5,14 @@ import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
+import { newBookingFormSchema } from "@/lib/validations/general";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const ticketRouter = createTRPCRouter({
   createTickets: protectedProcedure
     .input(
-      z.object({
+      newBookingFormSchema.extend({
         flightId: z.string(),
-        passengers: z
-          .array(
-            z.object({
-              name: z.string().min(10).max(15),
-              email: z.string().email(),
-              seatClass: z.nativeEnum(SeatClass).default("ECONOMY"),
-            })
-          )
-          .min(1)
-          .max(10),
       })
     )
     .mutation(async ({ ctx, input }) => {
