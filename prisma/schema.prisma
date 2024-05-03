@@ -133,9 +133,9 @@ enum PaymentStatus {
 }
 
 enum SeatClass {
-    Economy
-    Business
-    FirstClass
+    ECONOMY
+    BUSINESS
+    FIRSTCLASS
 }
 
 model Ticket {
@@ -143,7 +143,7 @@ model Ticket {
     weightKG    Int
     bookingDate DateTime  @default(now())
     seat        String
-    class       SeatClass @default(Economy)
+    class       SeatClass @default(ECONOMY)
 
     paymentStatus PaymentStatus @default(PENDING)
     paymentDate   DateTime?
