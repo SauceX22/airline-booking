@@ -2,10 +2,12 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Flight, Plane, Ticket } from "@prisma/client";
+import type { Flight, Plane, SeatClass, Ticket } from "@prisma/client";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { format } from "date-fns";
 import {
   CalendarIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   CircleArrowDownIcon,
   CircleArrowRightIcon,
@@ -22,7 +24,12 @@ import { toast } from "sonner";
 import type { z } from "zod";
 
 import { SeatClassPriceRestriction } from "@/config/site";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Form,
   FormControl,
@@ -32,7 +39,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -44,6 +52,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { revalidatePathCache } from "@/lib/actions";
+import { cn, generateAllPossibleSeats, generateRandomSeat } from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";
 
@@ -61,7 +70,7 @@ export function BookTicketSection({
   const { data: session } = useSession();
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       passengers: [
         {
@@ -140,6 +149,12 @@ export function BookTicketSection({
     });
   }
 
+  const totalPlaneSeats =
+    flight.Plane.nFirstClassSeats +
+    flight.Plane.nEconomySeats +
+    flight.Plane.nBusinessSeats;
+  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <Form {...newBookingForm}>
@@ -161,6 +176,10 @@ export function BookTicketSection({
                 passengerFields.append({
                   name: `Passenger ${passengerFields.fields.length + 1}`,
                   email: `passenger.${passengerFields.fields.length + 1}@example.com`,
+                  seat: generateRandomSeat({
+                    planeSeats: totalPlaneSeats,
+                    usedSeats,
+                  }),
                   seatClass: "ECONOMY",
                 });
               }}>
@@ -171,105 +190,168 @@ export function BookTicketSection({
           <ScrollArea>
             {passengerFields.fields.map((field, index) => (
               <section key={field.id} className="p-1">
-                <div className="flex items-start justify-stretch gap-2">
-                  <FormField
-                    {...register(`passengers.${index}.name`)}
-                    control={newBookingForm.control}
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel htmlFor="name">Name</FormLabel>
-                        <FormControl id="name">
-                          <Input
-                            type="text"
-                            id="name"
-                            autoCapitalize="words"
-                            autoComplete="name"
-                            autoCorrect="off"
-                            placeholder="Enter passenger name"
-                            disabled={isLoading}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {errors.passengers?.[index]?.name?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    {...register(`passengers.${index}.email`)}
-                    control={newBookingForm.control}
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel htmlFor="email">Email</FormLabel>
-                        <FormControl id="email">
-                          <Input
-                            type="email"
-                            id="email"
-                            autoCapitalize="words"
-                            autoComplete="email"
-                            autoCorrect="off"
-                            placeholder="Enter your email"
-                            disabled={isLoading}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {errors.passengers?.[index]?.email?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    {...register(`passengers.${index}.seatClass`)}
-                    control={newBookingForm.control}
-                    defaultValue="ECONOMY"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel htmlFor="seat-class">Seat Class</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select seat class" />
-                            </SelectTrigger>
+                <div className="flex flex-col items-start justify-start gap-2">
+                  <div className="flex w-full items-start justify-stretch gap-2">
+                    <FormField
+                      {...register(`passengers.${index}.name`)}
+                      control={newBookingForm.control}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel htmlFor="name">Name</FormLabel>
+                          <FormControl id="name">
+                            <Input
+                              type="text"
+                              id="name"
+                              autoCapitalize="words"
+                              autoComplete="name"
+                              autoCorrect="off"
+                              placeholder="Enter passenger name"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Seat Classes</SelectLabel>
-                              <SelectItem value="ECONOMY">
-                                Economy Class
-                              </SelectItem>
-                              <SelectItem value="BUSINESS">
-                                Business Class
-                              </SelectItem>
-                              <SelectItem value="FIRSTCLASS">
-                                First Class
-                              </SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="h-[4.5rem] shrink-0 grow-0"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      passengerFields.remove(index);
-                    }}>
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
+                          <FormMessage>
+                            {errors.passengers?.[index]?.name?.message}
+                          </FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      {...register(`passengers.${index}.email`)}
+                      control={newBookingForm.control}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel htmlFor="email">Email</FormLabel>
+                          <FormControl id="email">
+                            <Input
+                              type="email"
+                              id="email"
+                              autoCapitalize="words"
+                              autoComplete="email"
+                              autoCorrect="off"
+                              placeholder="Enter your email"
+                              disabled={isLoading}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage>
+                            {errors.passengers?.[index]?.email?.message}
+                          </FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      {...register(`passengers.${index}.seatClass`)}
+                      control={newBookingForm.control}
+                      defaultValue="ECONOMY"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel htmlFor="seat-class">Seat Class</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select seat class" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Seat Classes</SelectLabel>
+                                <SelectItem value="ECONOMY">
+                                  Economy Class
+                                </SelectItem>
+                                <SelectItem value="BUSINESS">
+                                  Business Class
+                                </SelectItem>
+                                <SelectItem value="FIRSTCLASS">
+                                  First Class
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="h-[4.5rem] shrink-0 grow-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        passengerFields.remove(index);
+                      }}>
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Collapsible className="w-full space-y-2">
+                    <CollapsibleTrigger
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "group flex w-full items-center justify-between"
+                      )}>
+                      <span className="font-medium">Seat Selection</span>
+                      <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className=" w-full gap-2 rounded-lg bg-accent p-2">
+                      <FormField
+                        {...register(`passengers.${index}.seat`)}
+                        control={newBookingForm.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <ScrollArea className=" flex w-fit flex-row items-stretch justify-stretch ">
+                                <RadioGroup
+                                  className="flex max-h-64 w-full flex-wrap items-start justify-evenly gap-2"
+                                  onValueChange={field.onChange}
+                                  value={field.value}>
+                                  {generateAllPossibleSeats({
+                                    planeSeats: totalPlaneSeats,
+                                  }).map((seat, index) => (
+                                    <FormControl key={index}>
+                                      <RadioGroupPrimitive.Item
+                                        className={cn(
+                                          buttonVariants({
+                                            variant: "outline",
+                                            size: "icon",
+                                          }),
+                                          "relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-xs",
+                                          "hover:bg-background/60",
+                                          "group [&[data-state=checked]]:bg-destructive/90"
+                                        )}
+                                        disabled={
+                                          usedSeats.includes(seat) ||
+                                          newBookingForm
+                                            .getValues("passengers")
+                                            .map((passenger) => passenger.seat)
+                                            .includes(seat)
+                                        }
+                                        id={seat}
+                                        value={seat}>
+                                        <span>{seat}</span>
+                                      </RadioGroupPrimitive.Item>
+                                    </FormControl>
+                                  ))}
+                                </RadioGroup>
+                                <ScrollBar orientation="horizontal" />
+                              </ScrollArea>
+                            </FormControl>
+
+                            <FormMessage>
+                              {errors.passengers?.[0]?.seat?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               </section>
             ))}
           </ScrollArea>
         </form>
       </Form>
-      <div className="col-span-1 space-y-6 rounded-lg bg-accent p-6">
+      <div className="col-span-1 h-fit space-y-6 rounded-lg bg-accent p-6">
         <div>
           <h2 className="mb-4 text-2xl font-bold">Flight Details</h2>
           <div className="mt-2 space-y-2">

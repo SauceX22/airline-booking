@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -17,18 +18,12 @@ export const ticketRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const usedSeats = (
-        await ctx.db.ticket.findMany({
-          where: { flightId: input.flightId },
-          select: { seat: true },
-        })
-      ).map((ticket) => ticket.seat);
-
       return await ctx.db.ticket.createMany({
         data: input.passengers.map(({ seatClass, ...passenger }) => ({
           passengerName: passenger.name,
           passengerEmail: passenger.email,
-          seat: generateRandomSeat({ usedSeats }),
+          seat: passenger.seat,
+          class: seatClass,
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
           paymentStatus: input.payLater ? "PENDING" : "CONFIRMED",

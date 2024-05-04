@@ -13,16 +13,44 @@ export function getInitials(name: string) {
     .toUpperCase();
 }
 
-export function generateRandomSeat({ usedSeats }: { usedSeats: string[] }) {
-  const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-  const totalColumns = 10; // Assuming 10 columns for seats
+const PLANE_ROWS = ["A", "B", "C", "D", "E", "F"];
+
+export function generateAllPossibleSeats({
+  planeSeats,
+}: {
+  planeSeats: number;
+}) {
+  const totalRows = PLANE_ROWS.length;
+  const totalColumns = Math.ceil(planeSeats / totalRows); // Calculate total columns based on the number of seats
+
+  const allSeats = [];
+
+  for (let i = 0; i < totalRows; i++) {
+    for (let j = 1; j <= totalColumns; j++) {
+      const seatName = `${PLANE_ROWS[i]}${j}`;
+      allSeats.push(seatName);
+    }
+  }
+
+  return allSeats.slice(0, planeSeats); // Return only the required number of seats if totalSeats is less than totalRows * totalColumns
+}
+
+export function generateRandomSeat({
+  planeSeats,
+  usedSeats,
+}: {
+  planeSeats: number;
+  usedSeats: string[];
+}) {
+  const totalRows = PLANE_ROWS.length;
+  const totalColumns = Math.ceil(planeSeats / totalRows);
 
   let randomRow;
   let randomColumn;
 
   do {
     // Generate random row and column
-    randomRow = rows[Math.floor(Math.random() * rows.length)];
+    randomRow = PLANE_ROWS[Math.floor(Math.random() * PLANE_ROWS.length)];
     randomColumn = Math.floor(Math.random() * totalColumns) + 1; // Adding 1 to start from 1 instead of 0
     const seatName = `${randomRow}${randomColumn}`;
 
