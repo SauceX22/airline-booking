@@ -25,6 +25,7 @@ export const ticketRouter = createTRPCRouter({
 
       return await ctx.db.ticket.createMany({
         data: input.passengers.map(({ seatClass, ...passenger }) => ({
+          passengerName: passenger.name,
           passengerEmail: passenger.email,
           seat: generateRandomSeat({ usedSeats }),
           weightKG: SeatClassWeightRestriction[seatClass],
