@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Flight, Plane, Ticket } from "@prisma/client";
 import { format } from "date-fns";
@@ -10,7 +9,9 @@ import {
   ChevronRightIcon,
   CircleArrowDownIcon,
   CircleArrowRightIcon,
+  CircleCheckIcon,
   CircleDollarSignIcon,
+  CircleXIcon,
   HashIcon,
   PlusIcon,
   TrashIcon,
@@ -20,10 +21,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import {
-  SeatClassPriceRestriction,
-  SeatClassWeightRestriction,
-} from "@/config/site";
+import { SeatClassPriceRestriction } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -34,7 +32,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -122,19 +119,31 @@ export function BookTicketSection({
       },
     });
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(data: FormData, { payLater }: { payLater: boolean }) {
+    // if any passenger has the same email as an existing passenger, throw an error
+    const existingEmails = existingUserTickets.map(
+      (ticket) => ticket.passengerEmail
+    );
+    const newEmails = data.passengers.map((passenger) => passenger.email);
+    if (existingEmails.some((email) => newEmails.includes(email))) {
+      return toast.error("One of the passengers already has a ticket.", {
+        description: existingEmails
+          .filter((email) => newEmails.includes(email))
+          .map((email) => `${email} has a ticket.`)
+          .join("\n"),
+      });
+    }
     await bookTickets({
       flightId: flight.id,
       passengers: data.passengers,
+      payLater,
     });
   }
 
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <Form {...newBookingForm}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="col-span-1 lg:col-span-2">
+        <form className="col-span-1 lg:col-span-2">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Passengers</h2>
             <Button
@@ -269,8 +278,8 @@ export function BookTicketSection({
                 <CircleArrowRightIcon className="my-auto h-4 w-4 shrink-0 grow-0" />
                 From
               </span>
-              <span className="text-lg font-semibold text-foreground">
-                {flight.source} <span>({flight.sourceCode})</span>
+              <span className="max-w-[50%] truncate text-nowrap text-lg font-semibold text-foreground">
+                <span>({flight.sourceCode})</span> {flight.source}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -278,8 +287,8 @@ export function BookTicketSection({
                 <CircleArrowDownIcon className="my-auto h-4 w-4 shrink-0 grow-0" />
                 To
               </span>
-              <span className="text-lg font-semibold text-foreground">
-                {flight.destination} <span>({flight.destinationCode})</span>
+              <span className="max-w-[50%] truncate text-nowrap text-lg font-semibold text-foreground">
+                <span>({flight.destinationCode})</span> {flight.destination}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -301,6 +310,35 @@ export function BookTicketSection({
               </span>
             </div>
             <div>
+              {existingUserTickets.length > 0 && (
+                <>
+                  <Separator className="mx-auto my-4 w-[80%] rounded-lg bg-muted-foreground" />
+                  {existingUserTickets.map((ticket) => (
+                    <div
+                      className="mb-2 flex items-center justify-between"
+                      key={ticket.id}>
+                      <span className="flex items-center gap-2 truncate text-nowrap font-semibold text-foreground">
+                        {ticket.paymentStatus === "CONFIRMED" &&
+                        ticket.paymentDate ? (
+                          <CircleCheckIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-success" />
+                        ) : (
+                          <CircleXIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-destructive" />
+                        )}
+
+                        <span className="flex flex-col items-start text-sm">
+                          {ticket.passengerName}
+                          <span className="flex items-start text-xs text-muted-foreground">
+                            {ticket.passengerEmail}
+                          </span>
+                        </span>
+                      </span>
+                      <span className="text-sm font-semibold capitalize text-muted-foreground">
+                        {ticket.class.replace("CLASS", " Class").toLowerCase()}
+                      </span>
+                    </div>
+                  ))}
+                </>
+              )}
               <Separator className="mx-auto my-4 w-[80%] rounded-lg bg-muted-foreground" />
               {newBookingForm.getValues("passengers").length > 0 ? (
                 newBookingForm.getValues("passengers").map((field, index) => (
@@ -368,15 +406,31 @@ export function BookTicketSection({
             </div>
           </div>
         </div>
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={async (e) => {
-            e.preventDefault();
-            await newBookingForm.handleSubmit(onSubmit)();
-          }}>
-          Proceed to Payment
-        </Button>
+        <div className="space-y-2">
+          <Button
+            className="w-full"
+            size="lg"
+            onClick={async (e) => {
+              e.preventDefault();
+              await newBookingForm.handleSubmit((data) =>
+                onSubmit(data, { payLater: false })
+              )();
+            }}>
+            Proceed to Payment
+          </Button>
+          <Button
+            className="w-full border-background hover:border-background/80 hover:bg-background/80"
+            size="lg"
+            variant="outline"
+            onClick={async (e) => {
+              e.preventDefault();
+              await newBookingForm.handleSubmit((data) =>
+                onSubmit(data, { payLater: true })
+              )();
+            }}>
+            Pay Later
+          </Button>
+        </div>
       </div>
     </div>
   );
