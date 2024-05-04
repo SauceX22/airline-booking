@@ -141,6 +141,14 @@ export function BookTicketSection({
               className=""
               onClick={(e) => {
                 e.preventDefault();
+                if (
+                  passengerFields.fields.length >=
+                  10 - existingUserTickets.length
+                ) {
+                  return toast.error(
+                    "You can only have 10 passengers per flight"
+                  );
+                }
                 passengerFields.append({
                   name: `Passenger ${passengerFields.fields.length + 1}`,
                   email: `passenger.${passengerFields.fields.length + 1}@example.com`,
