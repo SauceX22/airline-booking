@@ -1,10 +1,10 @@
-import { SeatClass } from "@prisma/client";
 import { z } from "zod";
 
 import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
+import { generateRandomSeat } from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
@@ -16,11 +16,17 @@ export const ticketRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const usedSeats = (
+        await ctx.db.ticket.findMany({
+          where: { flightId: input.flightId },
+          select: { seat: true },
+        })
+      ).map((ticket) => ticket.seat);
+
       return await ctx.db.ticket.createMany({
         data: input.passengers.map(({ seatClass, ...passenger }) => ({
-          name: passenger.name,
-          email: passenger.email,
-          seat: seatClass,
+          passengerEmail: passenger.email,
+          seat: generateRandomSeat({ usedSeats }),
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
           class: seatClass,
