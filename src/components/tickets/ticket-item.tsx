@@ -34,9 +34,13 @@ export function TicketItem({ ticket }: TicketItemProps) {
         </div>
         <Badge
           className="pointer-events-none w-fit select-none gap-1 px-1.5 text-sm font-medium"
-          variant="success">
+          variant={
+            ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
+              ? "success"
+              : "destructive"
+          }>
           <CircleCheck className="h-4 w-4" />
-          Confirmed
+          {ticket.paymentStatus === "CONFIRMED" ? "Confirmed" : "Pending"}
         </Badge>
       </CardHeader>
       <CardContent className="py-2">
