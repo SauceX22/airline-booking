@@ -145,6 +145,8 @@ model Ticket {
     seat        String
     class       SeatClass @default(ECONOMY)
 
+    passengerEmail String
+
     paymentStatus PaymentStatus @default(PENDING)
     paymentDate   DateTime?
     price         Int
