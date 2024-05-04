@@ -69,7 +69,7 @@ export function BookTicketSection({
       passengers: [
         {
           name: session?.user.name ?? "Passenger 1",
-          email: session?.user.email,
+          email: session?.user.email ?? "passenger.1@example.com",
           seatClass: "ECONOMY",
         },
       ],
