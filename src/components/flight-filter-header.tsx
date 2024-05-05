@@ -147,9 +147,11 @@ const FlightFilterHeader = () => {
                   await filterForm.handleSubmit(onSubmit)();
                 }}
                 value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Source City" />
-                </SelectTrigger>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Source City" />
+                  </SelectTrigger>
+                </FormControl>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Going From</SelectLabel>
@@ -184,9 +186,11 @@ const FlightFilterHeader = () => {
                   await filterForm.handleSubmit(onSubmit)();
                 }}
                 value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Destination City" />
-                </SelectTrigger>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Destination City" />
+                  </SelectTrigger>
+                </FormControl>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Going To</SelectLabel>
