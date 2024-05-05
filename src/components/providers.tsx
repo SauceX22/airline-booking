@@ -4,6 +4,7 @@ import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ModalProvider } from "@/modals";
 import { TRPCReactProvider } from "@/trpc/client";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -27,6 +28,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             shadow="0 0 10px #2247dd,0 0 5px #2247dd"
           />
           {children}
+          <ModalProvider />
           <Toaster richColors duration={2700} />
         </ThemeProvider>
       </TRPCReactProvider>
