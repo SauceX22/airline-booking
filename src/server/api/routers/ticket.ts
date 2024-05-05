@@ -6,7 +6,10 @@ import {
   SeatClassWeightRestriction,
 } from "@/config/site";
 import { generateRandomSeat } from "@/lib/utils";
-import { newBookingFormSchema } from "@/lib/validations/general";
+import {
+  newBookingFormSchema,
+  updateTicketSchema,
+} from "@/lib/validations/general";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const ticketRouter = createTRPCRouter({
@@ -31,6 +34,41 @@ export const ticketRouter = createTRPCRouter({
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),
+      });
+    }),
+  updateTicket: protectedProcedure
+    .input(
+      updateTicketSchema.extend({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          passengerName: input.name,
+          passengerEmail: input.email,
+          seat: input.seat,
+          class: input.seatClass,
+        },
+      });
+    }),
+  getTicket: protectedProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.ticket.findUnique({
+        where: { id: input.ticketId },
+        include: {
+          Flight: {
+            include: {
+              Plane: true,
+            },
+          },
+        },
       });
     }),
   getUserFlightTickets: protectedProcedure

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type Ticket } from "@prisma/client";
 import { format } from "date-fns";
 import {
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
+import { cn } from "@/lib/utils";
 
 interface TicketItemProps {
   ticket: Ticket;
@@ -122,7 +125,11 @@ export function TicketItem({ ticket }: TicketItemProps) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-center justify-between gap-2 pt-4">
-        <TicketItemActions ticket={ticket} />
+        <Link
+          className={cn(buttonVariants(), "w-full")}
+          href={`/tickets/${ticket.id}`}>
+          View Ticket
+        </Link>
       </CardFooter>
     </Card>
   );
