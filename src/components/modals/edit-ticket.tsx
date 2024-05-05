@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Plane, Ticket } from "@prisma/client";
@@ -81,6 +82,7 @@ export default function EditTicketDialog({
 
   const path = usePathname();
   const apiUtils = api.useUtils();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const totalPlaneSeats =
     plane.nFirstClassSeats + plane.nEconomySeats + plane.nBusinessSeats;
@@ -92,12 +94,14 @@ export default function EditTicketDialog({
         toast.error("Something went wrong.", {
           description: err.message,
         });
+        setDialogOpen(false);
       },
       async onSuccess(data, variables, context) {
         toast.success("Ticket updated successfully!", {
           description: "The ticket has been successfully updated.",
         });
 
+        setDialogOpen(false);
         await apiUtils.ticket.invalidate();
         await revalidatePathCache(path);
       },
@@ -114,7 +118,7 @@ export default function EditTicketDialog({
   }
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button>Edit Ticket</Button>
       </DialogTrigger>
