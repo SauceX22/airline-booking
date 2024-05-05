@@ -68,6 +68,13 @@ export function BookTicketSection({
   existingUserTickets,
 }: BookTicketSectionProps) {
   const { data: session } = useSession();
+
+  const totalPlaneSeats =
+    flight.Plane.nFirstClassSeats +
+    flight.Plane.nEconomySeats +
+    flight.Plane.nBusinessSeats;
+  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
     mode: "onBlur",
@@ -76,6 +83,7 @@ export function BookTicketSection({
         {
           name: session?.user.name ?? "Passenger 1",
           email: session?.user.email ?? "passenger.1@example.com",
+          seat: generateRandomSeat({ planeSeats: totalPlaneSeats, usedSeats }),
           seatClass: "ECONOMY",
         },
       ],
@@ -149,12 +157,6 @@ export function BookTicketSection({
     });
   }
 
-  const totalPlaneSeats =
-    flight.Plane.nFirstClassSeats +
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats;
-  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
-
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
       <Form {...newBookingForm}>
@@ -162,7 +164,6 @@ export function BookTicketSection({
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Passengers</h2>
             <Button
-              className=""
               onClick={(e) => {
                 e.preventDefault();
                 if (
