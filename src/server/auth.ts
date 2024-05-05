@@ -1,7 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type User } from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
-import type { Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "@/env.mjs";
@@ -30,7 +29,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/login",
   },
-  adapter: PrismaAdapter(db) as Adapter,
+  adapter: PrismaAdapter(db),
   providers: [
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
