@@ -1,10 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { type Ticket } from "@prisma/client";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/client";
 
 interface TicketActionsProps {
@@ -14,6 +27,7 @@ interface TicketActionsProps {
 export function TicketItemActions({ ticket }: TicketActionsProps) {
   const router = useRouter();
   const apiUtils = api.useUtils();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
     onError(err) {
@@ -48,12 +62,30 @@ export function TicketItemActions({ ticket }: TicketActionsProps) {
   });
   return (
     <>
-      <Button
-        variant="destructive"
-        className="w-full"
-        onClick={async () => await cancelTicket({ ticketId: ticket.id })}>
-        Cancel
-      </Button>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="w-full">
+            Cancel Ticket
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently cancel this
+              ticket and you will have to pay for the ticket again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Back</AlertDialogCancel>
+            <AlertDialogAction
+              className={cn(buttonVariants({ variant: "destructive" }))}
+              onClick={async () => await cancelTicket({ ticketId: ticket.id })}>
+              Confirm Ticket Cancellation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {ticket.paymentStatus === "PENDING" && (
         <Button
           variant="outline"

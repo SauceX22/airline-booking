@@ -2,6 +2,8 @@
 
 import { createPushModal } from "pushmodal";
 
+import EditTicketDialog from "@/components/modals/edit-ticket";
+
 export const {
   pushModal,
   popModal,
@@ -12,6 +14,6 @@ export const {
   ModalProvider,
 } = createPushModal({
   modals: {
-    // your modals...
+    editTicketDialog: EditTicketDialog,
   },
 });

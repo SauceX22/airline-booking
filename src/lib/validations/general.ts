@@ -15,7 +15,8 @@ export const newBookingFormSchema = z.object({
     .max(10),
 });
 
-export const updateBookingSchema = newBookingFormSchema.partial();
+export const updateTicketSchema =
+  newBookingFormSchema.shape.passengers.element.partial();
 
 export const flightFilterFormSchema = z.object({
   source: z.string().optional(),
