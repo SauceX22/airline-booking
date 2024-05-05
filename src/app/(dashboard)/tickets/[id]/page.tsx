@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { pushModal } from "@/components/modals";
+import { TicketItemActions } from "@/components/tickets/ticket-actions";
 import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
@@ -206,11 +207,13 @@ export default async function TicketDetailsPage({
               href="/tickets">
               Back
             </Link>
+
             <EditTicketDialog
               ticket={ticket}
               plane={ticket.Flight.Plane}
               existingUserTickets={existingUserTickets}
             />
+            <TicketItemActions ticket={ticket} />
           </div>
         </div>
       </div>
