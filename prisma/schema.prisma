@@ -95,6 +95,7 @@ model User {
 
 model Plane {
     id                  String   @id @default(cuid())
+    name                String
     nEconomySeats       Int
     nBusinessSeats      Int
     nFirstClassSeats    Int
@@ -106,16 +107,24 @@ model Plane {
 }
 
 model Flight {
-    id   String   @id @default(cuid())
-    date DateTime
+    id       String   @id @default(cuid())
+    name     String
+    date     DateTime
+    duration Int // in minutes
 
-    source      String
-    destination String
+    source          String
+    sourceCode      String
+    destination     String
+    destinationCode String
 
     Plane   Plane  @relation(fields: [planeId], references: [id], onDelete: Cascade)
     planeId String
 
     Tickets Ticket[]
+
+    @@index([source])
+    @@index([destination])
+    @@index([source, destination])
 }
 
 enum PaymentStatus {
@@ -123,13 +132,23 @@ enum PaymentStatus {
     PENDING
 }
 
-model Ticket {
-    id          String   @id @default(cuid())
-    weightKG    Int
-    bookingDate DateTime
-    seat        String
+enum SeatClass {
+    ECONOMY
+    BUSINESS
+    FIRSTCLASS
+}
 
-    paymentStatus PaymentStatus
+model Ticket {
+    id          String    @id @default(cuid())
+    weightKG    Int
+    bookingDate DateTime  @default(now())
+    seat        String
+    class       SeatClass @default(ECONOMY)
+
+    passengerName  String
+    passengerEmail String
+
+    paymentStatus PaymentStatus @default(PENDING)
     paymentDate   DateTime?
     price         Int
 

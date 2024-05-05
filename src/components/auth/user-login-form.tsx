@@ -3,45 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 
-import { MotionButton } from "@/components/ui/motion-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MotionButton } from "@/components/ui/motion-button";
 
 export const UserAuthLoginForm = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const searchParams = useSearchParams();
 
-  //   async function onSubmit(data: FormData) {
-  //     setIsLoading(true)
-
-  //     const signInResult = await signIn("email", {
-  //       email: data.email.toLowerCase(),
-  //       redirect: false,
-  //       callbackUrl: searchParams?.get("from") || "/home",
-  //     })
-
-  //     setIsLoading(false)
-
-  //     if (!signInResult?.ok) {
-  //       return toast({
-  //         title: "Something went wrong.",
-  //         description: "Your sign in request failed. Please try again.",
-  //         variant: "destructive",
-  //       })
-  //     }
-
-  //     return toast({
-  //       title: "Check your email",
-  //       description: "We sent you a login link. Be sure to check your spam too.",
-  //     })
-  //   }
-
   async function submitWithGoogle() {
     setIsGoogleLoading(true);
+    const { signIn } = await import("next-auth/react");
 
-    const signInResult = await signIn("google", {
+    await signIn("google", {
       callbackUrl: searchParams?.get("from") ?? "/auth/login",
     });
   }
@@ -84,8 +59,7 @@ export const UserAuthLoginForm = () => {
             className="w-full"
             onClick={submitWithGoogle}
             loadingText="Redirecting"
-            isLoading={isGoogleLoading}
-          >
+            isLoading={isGoogleLoading}>
             Login with Google
           </MotionButton>
         </div>

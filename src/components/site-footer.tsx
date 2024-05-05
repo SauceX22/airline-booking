@@ -1,8 +1,8 @@
 import * as React from "react";
 
+import { siteConfig } from "@/config/site";
 import { Icons } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
@@ -12,22 +12,12 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
         <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
           <Icons.logo />
           <p className="text-center text-sm leading-loose md:text-left">
-            Built by{" "}
-            <a
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
-              Mahmoud Alhussen
-            </a>
-            . Hosted on{" "}
+            Hosted on{" "}
             <a
               href="https://vercel.com"
               target="_blank"
               rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+              className="font-medium underline underline-offset-4">
               Vercel
             </a>
             . The source code is available on{" "}
@@ -35,8 +25,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+              className="font-medium underline underline-offset-4">
               GitHub
             </a>
             .

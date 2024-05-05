@@ -15,8 +15,13 @@ const config = {
       },
     ];
   },
+
   images: {
-    domains: ["avatar.vercel.sh"],
+    remotePatterns: [
+      {
+        hostname: "avatar.vercel.sh",
+      },
+    ],
     dangerouslyAllowSVG: true,
   },
 };

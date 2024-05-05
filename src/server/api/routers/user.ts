@@ -25,7 +25,7 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.user.update({
@@ -47,8 +47,8 @@ export const userRouter = createTRPCRouter({
               name: z.string(),
               email: z.string().email(),
             })
-            .partial(),
-        ),
+            .partial()
+        )
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.user.update({
@@ -63,7 +63,7 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.user.delete({ where: { id: input.id } });

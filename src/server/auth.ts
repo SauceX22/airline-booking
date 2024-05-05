@@ -1,10 +1,11 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type User } from "@prisma/client";
+import NextAuth, { type DefaultSession } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
+import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
-import NextAuth, { type DefaultSession } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -29,7 +30,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/login",
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
