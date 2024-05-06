@@ -8,12 +8,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { pushModal } from "@/components/modals";
+import EditTicketDialog from "@/components/modals/edit-ticket-dialog";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
 import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
-
-import EditTicketDialog from "../../../../components/modals/edit-ticket";
 
 type TicketDetailsPageProps = {
   params: { id: string };

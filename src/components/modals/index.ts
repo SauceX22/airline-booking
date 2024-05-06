@@ -2,7 +2,7 @@
 
 import { createPushModal } from "pushmodal";
 
-import EditTicketDialog from "@/components/modals/edit-ticket";
+import EditTicketDialog from "@/components/modals/edit-ticket-dialog";
 
 export const {
   pushModal,
