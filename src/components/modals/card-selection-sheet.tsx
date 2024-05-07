@@ -95,7 +95,7 @@ export default function CardSelectionSheet({
         <SheetHeader>
           <SheetTitle>Select Payment Method</SheetTitle>
           <SheetDescription>
-            Choose the card you'd like to use for this payment.
+            Choose the card you&aposd like to use for this payment.
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">

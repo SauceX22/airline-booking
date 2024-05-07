@@ -493,8 +493,8 @@ export function BookTicketSection({
               </span>
             </div>
             <div className="flex items-center justify-between text-sm font-semibold">
-              Note: you'll be paying for the ticket later through the tickets
-              menu.
+              Note: you&apos;ll be paying for the ticket later through the
+              tickets menu.
             </div>
           </div>
         </div>
