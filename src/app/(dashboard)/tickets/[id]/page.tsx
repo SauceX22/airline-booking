@@ -37,6 +37,8 @@ export default async function TicketDetailsPage({
     flightId: ticket.flightId,
   });
 
+  const creditCards = await api.creditCard.getAll.query();
+
   return (
     <DashboardShell>
       <DashboardHeader heading={ticket?.Flight.name} text="Ticket Details" />
@@ -96,8 +98,8 @@ export default async function TicketDetailsPage({
                   Payment Date
                 </span>
                 <span className="font-medium">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
-                    ? format(ticket.paymentDate, "MMM do, yyy")
+                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                    ? format(ticket.Payment?.date, "MMM do, yyy")
                     : "-"}
                 </span>
               </div>
@@ -212,7 +214,7 @@ export default async function TicketDetailsPage({
               plane={ticket.Flight.Plane}
               existingUserTickets={existingUserTickets}
             />
-            <TicketItemActions ticket={ticket} />
+            <TicketItemActions ticket={ticket} cards={creditCards} />
           </div>
         </div>
       </div>
