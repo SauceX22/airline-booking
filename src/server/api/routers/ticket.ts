@@ -17,7 +17,6 @@ export const ticketRouter = createTRPCRouter({
     .input(
       newBookingFormSchema.extend({
         flightId: z.string(),
-        payLater: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -29,8 +28,7 @@ export const ticketRouter = createTRPCRouter({
           class: seatClass,
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
-          paymentStatus: input.payLater ? "PENDING" : "CONFIRMED",
-          paymentDate: input.payLater ? undefined : new Date(),
+          paymentStatus: "PENDING",
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),

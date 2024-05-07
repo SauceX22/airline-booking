@@ -137,12 +137,12 @@ export function BookTicketSection({
 
         await apiUtils.ticket.invalidate();
         await revalidatePathCache(path);
-        router.push("/home");
+        router.push("/tickets");
         router.refresh();
       },
     });
 
-  async function onSubmit(data: FormData, { payLater }: { payLater: boolean }) {
+  async function onSubmit(data: FormData) {
     // if any passenger has the same email as an existing passenger, throw an error
     const existingEmails = existingUserTickets.map(
       (ticket) => ticket.passengerEmail
@@ -159,7 +159,6 @@ export function BookTicketSection({
     await bookTickets({
       flightId: flight.id,
       passengers: data.passengers,
-      payLater,
     });
   }
 
@@ -493,31 +492,22 @@ export function BookTicketSection({
                   : 0}
               </span>
             </div>
+            <div className="flex items-center justify-between text-sm font-semibold">
+              Note: you'll be paying for the ticket later through the tickets
+              menu.
+            </div>
           </div>
         </div>
         <div className="space-y-2">
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={async (e) => {
-              e.preventDefault();
-              await newBookingForm.handleSubmit((data) =>
-                onSubmit(data, { payLater: false })
-              )();
-            }}>
-            Proceed to Payment
-          </Button>
           <Button
             className="w-full border-background hover:border-background/80 hover:bg-background/80"
             size="lg"
             variant="outline"
             onClick={async (e) => {
               e.preventDefault();
-              await newBookingForm.handleSubmit((data) =>
-                onSubmit(data, { payLater: true })
-              )();
+              await newBookingForm.handleSubmit((data) => onSubmit(data))();
             }}>
-            Pay Later
+            Book Ticket
           </Button>
         </div>
       </div>

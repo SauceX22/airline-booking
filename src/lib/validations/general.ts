@@ -30,3 +30,7 @@ export const newCardFormSchema = z.object({
   expiry: z.string().min(5).max(5),
   cvc: z.string().min(3).max(3),
 });
+
+export const ticketPaymentFormSchema = z.object({
+  cardId: z.string(),
+});

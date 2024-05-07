@@ -48,22 +48,6 @@ export function TicketItemActions({ ticket, cards }: TicketActionsProps) {
     },
   });
 
-  const { mutateAsync: payTicket } = api.ticket.payTicket.useMutation({
-    onError(err) {
-      toast.error("Something went wrong.", {
-        description: err.message,
-      });
-    },
-    async onSuccess(data, variables, context) {
-      toast.success("Ticket paid", {
-        description: "Ticket paid successfully.",
-      });
-
-      await apiUtils.ticket.invalidate();
-      router.refresh();
-    },
-  });
-
   return (
     <>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -91,7 +75,7 @@ export function TicketItemActions({ ticket, cards }: TicketActionsProps) {
         </AlertDialogContent>
       </AlertDialog>
       {ticket.paymentStatus === "PENDING" && (
-        <CardSelectionSheet cards={cards} />
+        <CardSelectionSheet cards={cards} ticket={ticket} />
       )}
     </>
   );
