@@ -8,6 +8,7 @@ export const userAuthLoginSchema = z.object({
 
 export const userAuthRegisterSchema = userAuthLoginSchema.extend({
   name: z.string().min(3).max(25),
+  role: z.nativeEnum(UserRole).default("USER"),
 });
 
 export const addNewUserSchema = userAuthRegisterSchema

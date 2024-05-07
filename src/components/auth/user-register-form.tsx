@@ -1,12 +1,13 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type z } from "zod";
 
-import { Icons } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -17,11 +18,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { userAuthRegisterSchema } from "@/lib/validations/auth";
 import { api } from "@/trpc/client";
-import Link from "next/link";
-import { toast } from "sonner";
 
 type UserRegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -128,6 +137,35 @@ export function UserRegisterForm({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={registerForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="mt-2 flex flex-col gap-2">
+                    <FormLabel htmlFor="role">Role</FormLabel>
+                    <FormControl id="role">
+                      <Select
+                        {...field}
+                        onValueChange={field.onChange}
+                        value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full" id="role">
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Role</SelectLabel>
+                            <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectItem value="USER">User</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage>{errors.role?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
             </div>
             <button className={cn(buttonVariants())} disabled={isLoading}>
               {isLoading && (
@@ -148,8 +186,7 @@ export function UserRegisterForm({
             <Link
               prefetch
               className="hover:text-brand underline underline-offset-4"
-              href="/auth/login"
-            >
+              href="/auth/login">
               Login
             </Link>
           </span>

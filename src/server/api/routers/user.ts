@@ -19,20 +19,6 @@ export const userRouter = createTRPCRouter({
       });
 
       if (exists) {
-        // check if the user has a password, if not, they have been created by the manager...
-        // ...and should be able to register by simply setting their name and password
-        const isManuallyCreated = !exists?.passwordHash;
-        if (isManuallyCreated) {
-          const hashedPassword = await bcrypt.hash(input.password, 10);
-          return await ctx.db.user.update({
-            where: { id: exists.id },
-            data: {
-              name: input.name,
-              passwordHash: hashedPassword,
-            },
-          });
-        }
-
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "User with this email already exists",
