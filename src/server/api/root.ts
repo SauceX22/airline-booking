@@ -1,6 +1,7 @@
-import { userRouter } from "@/server/api/routers/user";
-import { ticketRouter } from "@/server/api/routers/ticket";
+import { creditCardRouter } from "@/server/api/routers/credit-card";
 import { flightRouter } from "@/server/api/routers/flight";
+import { ticketRouter } from "@/server/api/routers/ticket";
+import { userRouter } from "@/server/api/routers/user";
 import { createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   ticket: ticketRouter,
   flight: flightRouter,
   user: userRouter,
+  creditCard: creditCardRouter,
 });
 
 // export type definition of API
