@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MotionButton } from "@/components/ui/motion-button";
@@ -30,29 +32,20 @@ export const UserAuthLoginForm = () => {
             Enter your email below to login to your account
           </p>
         </div>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-              disabled
+        <div className="flex items-center justify-between gap-2">
+          <div
+            className={buttonVariants({
+              variant: "outline",
+              size: "icon",
+              className: "aspect-square",
+            })}>
+            <Image
+              src="https://authjs.dev/img/providers/google.svg"
+              alt="google-icon"
+              width={16}
+              height={16}
             />
           </div>
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link>
-            </div>
-            <Input id="password" type="password" required disabled />
-          </div>
-          <MotionButton disabled type="submit" className="w-full">
-            Login
-          </MotionButton>
           <MotionButton
             type="button"
             variant="outline"

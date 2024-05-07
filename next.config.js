@@ -21,6 +21,9 @@ const config = {
       {
         hostname: "avatar.vercel.sh",
       },
+      {
+        hostname: "authjs.dev",
+      },
     ],
     dangerouslyAllowSVG: true,
   },
