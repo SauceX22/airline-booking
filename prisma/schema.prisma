@@ -140,14 +140,13 @@ enum SeatClass {
 }
 
 model Ticket {
-    id          String    @id @default(cuid())
-    weightKG    Int
-    bookingDate DateTime  @default(now())
-    seat        String
-    class       SeatClass @default(ECONOMY)
+    id       String    @id @default(cuid())
+    weightKG Int
+    seat     String
+    class    SeatClass @default(ECONOMY)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    bookingDate DateTime @default(now()) @map("createdAt")
+    updatedAt   DateTime @updatedAt
 
     passengerName  String
     passengerEmail String
