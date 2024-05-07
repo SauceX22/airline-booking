@@ -1,11 +1,9 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
-import { generateRandomSeat } from "@/lib/utils";
 import {
   newBookingFormSchema,
   updateTicketSchema,
