@@ -38,13 +38,11 @@ export const userRouter = createTRPCRouter({
 
       return await ctx.db.user.create({
         data: {
-          name: input.name,
-          email: input.email,
+          ...input,
           passwordHash: hashedPassword,
         },
       });
     }),
-
   getAll: protectedManagerProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {

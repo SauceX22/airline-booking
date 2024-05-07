@@ -20,7 +20,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
-import { TicketItemActions } from "@/components/tickets/ticket-actions";
 import { cn } from "@/lib/utils";
 
 interface TicketItemProps {
