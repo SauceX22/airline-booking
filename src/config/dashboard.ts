@@ -22,13 +22,13 @@ export const dashboardConfig: DashboardConfig = {
       title: "Users",
       href: "/users",
       icon: "user",
-      managerOnly: true,
+      adminOnly: true,
     },
     {
       title: "Flights",
       href: "/flights",
       icon: "logo",
-      managerOnly: true,
+      adminOnly: true,
     },
     {
       title: "Settings",

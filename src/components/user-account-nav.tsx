@@ -52,7 +52,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         </div>
         <DropdownMenuSeparator />
         {dashboardConfig.sidebarNav.map((item, idx) => {
-          if (item.managerOnly && user.role !== "ADMIN") {
+          if (item.adminOnly && user.role !== "ADMIN") {
             return null;
           }
 
