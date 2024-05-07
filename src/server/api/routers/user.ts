@@ -1,12 +1,64 @@
+import { TRPCError } from "@trpc/server";
+import bcrypt from "bcrypt";
 import { z } from "zod";
 
+import { userAuthRegisterSchema } from "@/lib/validations/auth";
 import {
   createTRPCRouter,
   protectedManagerProcedure,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
+  register: publicProcedure
+    .input(userAuthRegisterSchema)
+    .mutation(async ({ ctx, input }) => {
+      const exists = await ctx.db.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (exists) {
+        // check if the user has a password, if not, they have been created by the manager...
+        // ...and should be able to register by simply setting their name and password
+        const isManuallyCreated = !exists?.passwordHash;
+        if (isManuallyCreated) {
+          const hashedPassword = await bcrypt.hash(input.password, 10);
+          return await ctx.db.user.update({
+            where: { id: exists.id },
+            data: {
+              name: input.name,
+              passwordHash: hashedPassword,
+            },
+          });
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User with this email already exists",
+        });
+      }
+
+      let hashedPassword;
+      try {
+        hashedPassword = await bcrypt.hash(input.password, 10);
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to hash password",
+          cause: error,
+        });
+      }
+
+      return await ctx.db.user.create({
+        data: {
+          name: input.name,
+          email: input.email,
+          passwordHash: hashedPassword,
+        },
+      });
+    }),
+
   getAll: protectedManagerProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {
