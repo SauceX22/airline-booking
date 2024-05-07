@@ -2,7 +2,9 @@
 
 import { createPushModal } from "pushmodal";
 
-import EditTicketDialog from "@/components/modals/edit-ticket";
+import CardSelectionSheet from "@/components/modals/card-selection-sheet";
+import EditTicketDialog from "@/components/modals/edit-ticket-dialog";
+import NewCardDialog from "@/components/modals/new-card-dialog";
 
 export const {
   pushModal,
@@ -15,5 +17,7 @@ export const {
 } = createPushModal({
   modals: {
     editTicketDialog: EditTicketDialog,
+    cardSelectionSheet: CardSelectionSheet,
+    newCardDialog: NewCardDialog,
   },
 });

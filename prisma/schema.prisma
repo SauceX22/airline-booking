@@ -90,7 +90,8 @@ model User {
     gender  Gender   @default(MALE)
     fine    Int      @default(0) // passenger only
 
-    Tickets Ticket[]
+    Tickets     Ticket[]
+    CreditCards CreditCard[]
 }
 
 model Plane {
@@ -145,11 +146,14 @@ model Ticket {
     seat        String
     class       SeatClass @default(ECONOMY)
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     passengerName  String
     passengerEmail String
 
-    paymentStatus PaymentStatus @default(PENDING)
-    paymentDate   DateTime?
+    paymentStatus PaymentStatus       @default(PENDING)
+    Payment       PaymentTransaction?
     price         Int
 
     Flight   Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
@@ -157,4 +161,39 @@ model Ticket {
 
     BookedBy   User   @relation(fields: [bookedById], references: [id], onDelete: Cascade)
     bookedById String
+
+    @@unique([id, bookedById])
+    @@index([bookedById])
+    @@index([flightId])
+}
+
+model PaymentTransaction {
+    date DateTime @default(now()) @map("createdAt")
+
+    Card   CreditCard @relation(fields: [cardId, userId], references: [id, userId], onDelete: Cascade)
+    cardId String
+
+    Ticket   Ticket @relation(fields: [ticketId, userId], references: [id, bookedById], onDelete: Cascade)
+    ticketId String
+
+    userId String
+
+    @@id([cardId, ticketId])
+    @@unique([ticketId, userId])
+}
+
+model CreditCard {
+    id     String @id @default(cuid())
+    name   String
+    number String
+    expiry String
+    cvc    String
+
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+
+    PaymentTransactions PaymentTransaction[]
+
+    @@unique([id, userId])
+    @@index([userId])
 }

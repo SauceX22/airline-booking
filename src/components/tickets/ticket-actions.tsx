@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { type Ticket } from "@prisma/client";
+import { type CreditCard, type Ticket } from "@prisma/client";
 import { toast } from "sonner";
 
 import {
@@ -17,14 +17,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { pushModal } from "@/components/modals";
+import CardSelectionSheet from "@/components/modals/card-selection-sheet";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/client";
 
 interface TicketActionsProps {
   ticket: Ticket;
+  cards: CreditCard[];
 }
 
-export function TicketItemActions({ ticket }: TicketActionsProps) {
+export function TicketItemActions({ ticket, cards }: TicketActionsProps) {
   const router = useRouter();
   const apiUtils = api.useUtils();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -45,21 +48,6 @@ export function TicketItemActions({ ticket }: TicketActionsProps) {
     },
   });
 
-  const { mutateAsync: payTicket } = api.ticket.payTicket.useMutation({
-    onError(err) {
-      toast.error("Something went wrong.", {
-        description: err.message,
-      });
-    },
-    async onSuccess(data, variables, context) {
-      toast.success("Ticket paid", {
-        description: "Ticket paid successfully.",
-      });
-
-      await apiUtils.ticket.invalidate();
-      router.refresh();
-    },
-  });
   return (
     <>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -87,12 +75,7 @@ export function TicketItemActions({ ticket }: TicketActionsProps) {
         </AlertDialogContent>
       </AlertDialog>
       {ticket.paymentStatus === "PENDING" && (
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={async () => await payTicket({ ticketId: ticket.id })}>
-          Pay
-        </Button>
+        <CardSelectionSheet cards={cards} ticket={ticket} />
       )}
     </>
   );

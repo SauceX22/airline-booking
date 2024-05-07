@@ -23,3 +23,14 @@ export const flightFilterFormSchema = z.object({
   dest: z.string().optional(),
   date: z.date().optional(),
 });
+
+export const newCardFormSchema = z.object({
+  name: z.string().min(1).max(30),
+  number: z.string().min(16).max(16),
+  expiry: z.string().min(5).max(5),
+  cvc: z.string().min(3).max(3),
+});
+
+export const ticketPaymentFormSchema = z.object({
+  cardId: z.string(),
+});

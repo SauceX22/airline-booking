@@ -17,7 +17,6 @@ export const ticketRouter = createTRPCRouter({
     .input(
       newBookingFormSchema.extend({
         flightId: z.string(),
-        payLater: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -29,8 +28,7 @@ export const ticketRouter = createTRPCRouter({
           class: seatClass,
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
-          paymentStatus: input.payLater ? "PENDING" : "CONFIRMED",
-          paymentDate: input.payLater ? undefined : new Date(),
+          paymentStatus: "PENDING",
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),
@@ -68,6 +66,11 @@ export const ticketRouter = createTRPCRouter({
               Plane: true,
             },
           },
+          Payment: {
+            include: {
+              Card: true,
+            },
+          },
         },
       });
     }),
@@ -83,6 +86,13 @@ export const ticketRouter = createTRPCRouter({
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         },
+        include: {
+          Payment: {
+            include: {
+              Card: true,
+            },
+          },
+        },
       });
     }),
   getUserTickets: protectedProcedure
@@ -96,12 +106,20 @@ export const ticketRouter = createTRPCRouter({
         where: {
           bookedById: ctx.session.user.id,
         },
+        include: {
+          Payment: {
+            include: {
+              Card: true,
+            },
+          },
+        },
       });
     }),
   payTicket: protectedProcedure
     .input(
       z.object({
         ticketId: z.string(),
+        cardId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -109,7 +127,21 @@ export const ticketRouter = createTRPCRouter({
         where: { id: input.ticketId },
         data: {
           paymentStatus: "CONFIRMED",
-          paymentDate: new Date(),
+          Payment: {
+            upsert: {
+              where: {
+                AND: [{ ticketId: input.ticketId }, { cardId: input.cardId }],
+              },
+              update: {
+                date: new Date(),
+                Card: { connect: { id: input.cardId } },
+              },
+              create: {
+                date: new Date(),
+                Card: { connect: { id: input.cardId } },
+              },
+            },
+          },
         },
       });
     }),

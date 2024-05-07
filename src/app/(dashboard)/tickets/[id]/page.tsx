@@ -1,19 +1,18 @@
 import { unstable_noStore } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { format } from "date-fns";
+import { format, minutesToHours } from "date-fns";
 import { TicketIcon } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { pushModal } from "@/components/modals";
+import EditTicketDialog from "@/components/modals/edit-ticket-dialog";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
 import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
-
-import EditTicketDialog from "../../../../components/modals/edit-ticket";
 
 type TicketDetailsPageProps = {
   params: { id: string };
@@ -37,6 +36,8 @@ export default async function TicketDetailsPage({
   const existingUserTickets = await api.ticket.getUserFlightTickets.query({
     flightId: ticket.flightId,
   });
+
+  const creditCards = await api.creditCard.getAll.query();
 
   return (
     <DashboardShell>
@@ -80,8 +81,8 @@ export default async function TicketDetailsPage({
                 <span className="font-medium text-gray-500 dark:text-gray-400">
                   Booking Date
                 </span>
-                <span className="font-medium text-red-500">
-                  GET THIS FROM SOMEWHERE
+                <span className="font-medium">
+                  {format(ticket.bookingDate, "MMM do, yyy")}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -97,8 +98,8 @@ export default async function TicketDetailsPage({
                   Payment Date
                 </span>
                 <span className="font-medium">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
-                    ? format(ticket.paymentDate, "MMM do, yyy")
+                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                    ? format(ticket.Payment?.date, "MMM do, yyy")
                     : "-"}
                 </span>
               </div>
@@ -128,8 +129,10 @@ export default async function TicketDetailsPage({
                 <span className="font-medium text-gray-500 dark:text-gray-400">
                   Flight Duration
                 </span>
-                <span className="font-medium text-red-500">
-                  GET THIS FROM SOMEWHERE
+                <span className="font-medium">
+                  {/* change ticket.Flight.duration to a good fromat from minutes */}
+                  {minutesToHours(ticket.Flight.duration)} hours and{" "}
+                  {ticket.Flight.duration % 60} minutes
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -213,7 +216,7 @@ export default async function TicketDetailsPage({
               plane={ticket.Flight.Plane}
               existingUserTickets={existingUserTickets}
             />
-            <TicketItemActions ticket={ticket} />
+            <TicketItemActions ticket={ticket} cards={creditCards} />
           </div>
         </div>
       </div>
