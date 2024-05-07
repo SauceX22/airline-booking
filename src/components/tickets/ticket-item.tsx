@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { type Ticket } from "@prisma/client";
+import { type PaymentTransaction, type Ticket } from "@prisma/client";
 import { format } from "date-fns";
 import {
   CircleCheck,
@@ -24,7 +24,7 @@ import { TicketItemActions } from "@/components/tickets/ticket-actions";
 import { cn } from "@/lib/utils";
 
 interface TicketItemProps {
-  ticket: Ticket;
+  ticket: Ticket & { Payment: PaymentTransaction | null };
 }
 
 export function TicketItem({ ticket }: TicketItemProps) {
@@ -38,7 +38,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
         <Badge
           className="pointer-events-none w-fit select-none gap-1 px-1.5 text-sm font-medium"
           variant={
-            ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
+            ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
               ? "success"
               : "destructive"
           }>
@@ -104,8 +104,8 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Payment Date
                 </div>
                 <div className="text-nowrap text-lg font-semibold">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.paymentDate
-                    ? format(ticket.paymentDate, "MMM do, yyy")
+                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                    ? format(ticket.Payment?.date, "MMM do, yyy")
                     : "-"}
                 </div>
               </div>

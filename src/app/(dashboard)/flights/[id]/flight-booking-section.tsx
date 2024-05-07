@@ -2,7 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Flight, Plane, SeatClass, Ticket } from "@prisma/client";
+import type {
+  Flight,
+  PaymentTransaction,
+  Plane,
+  SeatClass,
+  Ticket,
+} from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { format } from "date-fns";
 import {
@@ -58,7 +64,7 @@ import { api } from "@/trpc/client";
 
 interface BookTicketSectionProps {
   flight: Flight & { Plane: Plane; Tickets: Ticket[] };
-  existingUserTickets: Ticket[];
+  existingUserTickets: (Ticket & { Payment: PaymentTransaction | null })[];
 }
 
 type FormData = z.infer<typeof newBookingFormSchema>;
@@ -77,7 +83,7 @@ export function BookTicketSection({
 
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
-    mode: "onBlur",
+    mode: "onChange",
     defaultValues: {
       passengers: [
         {
@@ -402,7 +408,7 @@ export function BookTicketSection({
                       key={ticket.id}>
                       <span className="flex items-center gap-2 truncate text-nowrap font-semibold text-foreground">
                         {ticket.paymentStatus === "CONFIRMED" &&
-                        ticket.paymentDate ? (
+                        ticket.Payment?.date ? (
                           <CircleCheckIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-success" />
                         ) : (
                           <CircleXIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-destructive" />
