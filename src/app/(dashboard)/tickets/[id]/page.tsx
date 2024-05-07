@@ -1,7 +1,7 @@
 import { unstable_noStore } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { format } from "date-fns";
+import { format, minutesToHours } from "date-fns";
 import { TicketIcon } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -81,8 +81,8 @@ export default async function TicketDetailsPage({
                 <span className="font-medium text-gray-500 dark:text-gray-400">
                   Booking Date
                 </span>
-                <span className="font-medium text-red-500">
-                  GET THIS FROM SOMEWHERE
+                <span className="font-medium">
+                  {format(ticket.bookingDate, "MMM do, yyy")}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -129,8 +129,10 @@ export default async function TicketDetailsPage({
                 <span className="font-medium text-gray-500 dark:text-gray-400">
                   Flight Duration
                 </span>
-                <span className="font-medium text-red-500">
-                  GET THIS FROM SOMEWHERE
+                <span className="font-medium">
+                  {/* change ticket.Flight.duration to a good fromat from minutes */}
+                  {minutesToHours(ticket.Flight.duration)} hours and{" "}
+                  {ticket.Flight.duration % 60} minutes
                 </span>
               </div>
               <div className="flex items-center justify-between">
