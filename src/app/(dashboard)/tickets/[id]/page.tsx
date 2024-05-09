@@ -42,10 +42,10 @@ export default async function TicketDetailsPage({
       <DashboardHeader heading={ticket?.Flight.name} text="Ticket Details">
         <TicketItemActions ticket={ticket} />
       </DashboardHeader>
-      <div className="grid grid-cols-1 gap-8 text-lg font-medium md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 text-lg font-medium md:grid-cols-2">
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Ticket Details</CardTitle>
+            <CardTitle className="text-3xl">Ticket Details</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2">
             <div className="grid grid-cols-3 gap-y-2">
@@ -86,7 +86,7 @@ export default async function TicketDetailsPage({
         </Card>
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Flight Details</CardTitle>
+            <CardTitle className="text-3xl">Flight Details</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2">
             <div className="grid grid-cols-2 gap-y-2">
