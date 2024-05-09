@@ -30,8 +30,8 @@ export default async function TicketsPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Tickets" text="Your booked tickets." />
-      <Separator className="mb-4" />
       <div className="px-2">
+        <Separator className="mb-4" />
         {userTickets.length ? (
           <div className="grid grid-cols-3 gap-4">
             {userTickets.map((ticket) => (
