@@ -24,9 +24,10 @@ export async function TicketItemActions({
 }: TicketActionsProps) {
   const session = await auth();
   const isAdmin = session?.user.role === "ADMIN";
+
   const creditCards = await api.creditCard.getAll.query();
-  const existingUserTickets = await api.ticket.getUserTickets.query({
-    flightId: ticket.flightId,
+  const existingUserTickets = await api.ticket.getThisUserTickets.query({
+    filter: { flightId: ticket.flightId },
   });
 
   return (

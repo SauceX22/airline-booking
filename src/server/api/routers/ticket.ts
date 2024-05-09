@@ -8,7 +8,11 @@ import {
   newBookingFormSchema,
   updateTicketSchema,
 } from "@/lib/validations/general";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedAdminProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 
 export const ticketRouter = createTRPCRouter({
   createTickets: protectedProcedure
@@ -72,18 +76,49 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
-  getUserTickets: protectedProcedure
+  getThisUserTickets: protectedProcedure
     .input(
       z.object({
-        flightId: z.string().optional(),
-        bookedById: z.string().optional(),
+        filter: z
+          .object({
+            flightId: z.string(),
+          })
+          .partial()
+          .optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.ticket.findMany({
         where: {
-          flightId: input.flightId,
-          bookedById: input.bookedById ?? ctx.session.user.id,
+          flightId: input.filter?.flightId,
+          bookedById: ctx.session.user.id,
+        },
+        include: {
+          Payment: {
+            include: {
+              Card: true,
+            },
+          },
+        },
+      });
+    }),
+  getAllTickets: protectedAdminProcedure
+    .input(
+      z.object({
+        filter: z
+          .object({
+            flightId: z.string(),
+            bookedById: z.string(),
+          })
+          .partial()
+          .optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.ticket.findMany({
+        where: {
+          flightId: input.filter?.flightId,
+          bookedById: input.filter?.bookedById,
         },
         include: {
           Payment: {

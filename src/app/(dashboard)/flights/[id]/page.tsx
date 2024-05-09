@@ -36,8 +36,8 @@ export default async function FlightDetailsPage({
   const isAdmin = session?.user.role === "ADMIN";
 
   const flight = await api.flight.getFlight.query({ flightId });
-  const existingUserTickets = await api.ticket.getUserTickets.query({
-    flightId,
+  const existingUserTickets = await api.ticket.getThisUserTickets.query({
+    filter: { flightId },
   });
 
   if (!flight) {
