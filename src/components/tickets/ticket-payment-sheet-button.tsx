@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { CreditCard, Ticket } from "@prisma/client";
@@ -50,8 +51,6 @@ export default function TicketPaymentSheetButton({
   cards,
   ticket,
 }: TicketPaymentSheetButtonProps) {
-  const { data: session } = useSession();
-
   const ticketPaymentForm = useForm<FormData>({
     resolver: zodResolver(ticketPaymentFormSchema),
     mode: "onChange",
@@ -64,9 +63,11 @@ export default function TicketPaymentSheetButton({
     formState: { errors },
   } = ticketPaymentForm;
 
+  const { data: session } = useSession();
   const apiUtils = api.useUtils();
   const router = useRouter();
   const isPaid = ticket.paymentStatus === "CONFIRMED";
+  const [isOpen, setIsOpen] = useState(false);
 
   const { mutateAsync: payTicket, isLoading: isPaying } =
     api.ticket.payTicket.useMutation({
@@ -87,12 +88,13 @@ export default function TicketPaymentSheetButton({
 
   async function onSubmit(data: FormData) {
     await payTicket({ cardId: data.cardId, ticketId: ticket.id });
+    setIsOpen(false);
   }
 
   return (
-    <Sheet key="card-selection-sheet">
+    <Sheet key="card-selection-sheet" open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button size="sm" variant="default" disabled={isPaying || isPaid}>
+        <Button variant="default" disabled={isPaying || isPaid}>
           <DollarSignIcon className="mr-2 h-4 w-4" />
           {isPaid ? "Ticket Paid" : "Pay Ticket"}
         </Button>

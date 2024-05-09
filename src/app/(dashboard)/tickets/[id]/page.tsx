@@ -3,9 +3,18 @@ import { notFound, redirect } from "next/navigation";
 import { format, minutesToHours } from "date-fns";
 import { TicketIcon } from "lucide-react";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
+import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
@@ -33,169 +42,95 @@ export default async function TicketDetailsPage({
       <DashboardHeader heading={ticket?.Flight.name} text="Ticket Details">
         <TicketItemActions ticket={ticket} />
       </DashboardHeader>
-      <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-950 sm:p-8 md:p-10 lg:p-12">
-        <div className="grid gap-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Ticket Details</h1>
-            <div className="inline-flex items-center gap-2 rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-              <TicketIcon className="h-4 w-4" />
-              <span>INV-1234</span>
+      <div className="grid grid-cols-1 gap-8 text-lg font-medium md:grid-cols-2">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Ticket Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            <div className="grid grid-cols-3 gap-y-2">
+              <div className="text-muted-foreground">Ticket Number:</div>
+              <div className="col-span-2">{ticket.Flight.name}</div>
+              <div className="text-muted-foreground">Passenger Name:</div>
+              <div className="col-span-2">{ticket.passengerName}</div>
+              <div className="text-muted-foreground">Passenger Email:</div>
+              <div className="col-span-2">{ticket.passengerEmail}</div>
+              <div className="text-muted-foreground">Seat Class:</div>
+              <div className="col-span-2">{ticket.class}</div>
+              <div className="text-muted-foreground">Seat Number:</div>
+              <div className="col-span-2">{ticket.seat}</div>
+              <div className="text-muted-foreground">Booking Date:</div>
+              <div className="col-span-2">
+                {format(ticket.bookingDate, "MMM do, yyyy")}
+              </div>
+              <div className="text-muted-foreground">Payment Status:</div>
+              <div
+                className={cn(
+                  "col-span-2",
+                  ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                    ? "text-success"
+                    : "text-destructive"
+                )}>
+                {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
+              </div>
+              <div className="text-muted-foreground">Payment Date:</div>
+              <div className="col-span-2">
+                {ticket.Payment
+                  ? format(ticket.Payment.date, "MMM do, yyyy")
+                  : "-"}
+              </div>
+              <div className="text-muted-foreground">Price:</div>
+              <div className="col-span-2">${ticket.price}</div>
             </div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Passenger Name
-                </span>
-                <span className="font-medium">{ticket.passengerName}</span>
+          </CardContent>
+        </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Flight Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            <div className="grid grid-cols-2 gap-y-2">
+              <div className="text-muted-foreground">Flight Name:</div>
+              <div>{ticket.Flight.name}</div>
+              <div className="text-muted-foreground">Flight Date:</div>
+              <div>{format(ticket.Flight.date, "MMM do, yyyy")}</div>
+              <div className="text-muted-foreground">Flight Duration:</div>
+              <div>
+                {minutesToHours(ticket.Flight.duration)} hours and{" "}
+                {ticket.Flight.duration % 60} minutes
               </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Passenger Email
-                </span>
-                <span className="font-medium">{ticket.passengerEmail}</span>
+              <div className="text-muted-foreground">Source Airport:</div>
+              <div>{ticket.Flight.source}</div>
+              <div className="text-muted-foreground">Destination Airport:</div>
+              <div>{ticket.Flight.destination}</div>
+              <div className="text-muted-foreground">Plane Name:</div>
+              <div>{ticket.Flight.Plane.name}</div>
+              <div className="text-muted-foreground">Plane Type:</div>
+              <div>{ticket.Flight.Plane.type}</div>
+              <div className="text-muted-foreground">Total Economy Seats:</div>
+              <div>{ticket.Flight.Plane.nEconomySeats}</div>
+              <div className="text-muted-foreground">Total Business Seats:</div>
+              <div>{ticket.Flight.Plane.nBusinessSeats}</div>
+              <div className="text-muted-foreground">
+                Total First Class Seats:
               </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Seat Class
-                </span>
-                <span className="font-medium">{ticket.class}</span>
+              <div>{ticket.Flight.Plane.nFirstClassSeats}</div>
+              <div className="text-muted-foreground">
+                Last Maintenance Date:
               </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Seat Number
-                </span>
-                <span className="font-medium">{ticket.seat}</span>
+              <div>
+                {format(
+                  ticket.Flight.Plane.lastMaintenanceDate,
+                  "MMM do, yyyy"
+                )}
               </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Booking Date
-                </span>
-                <span className="font-medium">
-                  {format(ticket.bookingDate, "MMM do, yyy")}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Payment Status
-                </span>
-                <div className="font-medium">
-                  {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Payment Date
-                </span>
-                <span className="font-medium">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
-                    ? format(ticket.Payment?.date, "MMM do, yyy")
-                    : "-"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Price
-                </span>
-                <span className="font-medium">{ticket.price}</span>
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Flight Name
-                </span>
-                <span className="font-medium">{ticket.Flight.name}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Flight Date
-                </span>
-                <span className="font-medium">
-                  {format(ticket.Flight.date, "MMM do, yyy")}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Flight Duration
-                </span>
-                <span className="font-medium">
-                  {/* change ticket.Flight.duration to a good fromat from minutes */}
-                  {minutesToHours(ticket.Flight.duration)} hours and{" "}
-                  {ticket.Flight.duration % 60} minutes
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Source Airport
-                </span>
-                <span className="font-medium">{ticket.Flight.source}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Destination Airport
-                </span>
-                <span className="font-medium">{ticket.Flight.destination}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Plane Name
-                </span>
-                <span className="font-medium">{ticket.Flight.Plane.name}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Plane Type
-                </span>
-                <span className="font-medium">{ticket.Flight.Plane.type}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Total Economy Seats
-                </span>
-                <span className="font-medium">
-                  {ticket.Flight.Plane.nEconomySeats}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Total Business Seats
-                </span>
-                <span className="font-medium">
-                  {ticket.Flight.Plane.nBusinessSeats}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Total First Class Seats
-                </span>
-                <span className="font-medium">
-                  {ticket.Flight.Plane.nFirstClassSeats}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  Last Maintenance Date
-                </span>
-                <span className="font-medium">
-                  {format(
-                    ticket.Flight.Plane.lastMaintenanceDate,
-                    "MMM do, yyy"
-                  )}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-500 dark:text-gray-400">
-                  First Flight Date
-                </span>
-                <span className="font-medium">
-                  {format(ticket.Flight.Plane.firstFlightDate, "MMM do, yyy")}
-                </span>
+              <div className="text-muted-foreground">First Flight Date:</div>
+              <div>
+                {format(ticket.Flight.Plane.firstFlightDate, "MMM do, yyyy")}
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardShell>
   );
