@@ -55,8 +55,8 @@ export default async function TicketsPage() {
               className={cn(
                 "mb-8 mt-2 text-center text-sm font-normal leading-6 text-muted-foreground"
               )}>
-              There are no tickets available for rent at the moment. Please
-              check back later.
+              No tickets have been booked by your users yet. Please check back
+              later.
             </p>
           </div>
         )}
