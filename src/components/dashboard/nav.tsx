@@ -1,28 +1,20 @@
-import { headers } from "next/headers";
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { auth } from "@/server/auth";
 import { type SidebarNavItem } from "@/types";
 
 interface DashboardNavProps {
   items: SidebarNavItem[];
 }
 
-export async function DashboardNav({ items }: DashboardNavProps) {
-  const headersList = headers();
-  // host: 'localhost:3000',
-  const domain = headersList.get("host") ?? "";
-  // referer: 'http://localhost:3000/home',
-  const fullUrl = headersList.get("referer") ?? "";
-
-  const path = fullUrl
-    .replace(domain, "")
-    .replace("http://", "")
-    .replace("https://", "");
-
-  const session = await auth();
+export function DashboardNav({ items }: DashboardNavProps) {
+  const path = usePathname();
+  const { data: session } = useSession();
 
   if (!items?.length) {
     return null;
