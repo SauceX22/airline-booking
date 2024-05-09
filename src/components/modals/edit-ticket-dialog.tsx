@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, DeleteIcon, Edit3Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -53,17 +53,17 @@ import { api } from "@/trpc/client";
 
 type FormData = z.infer<typeof updateTicketSchema>;
 
-type EditTicketFormProps = {
+type EditTicketDialogButtonProps = {
   ticket: Ticket;
   plane: Plane;
   existingUserTickets: Ticket[];
 };
 
-export default function EditTicketDialog({
+export default function EditTicketDialogButton({
   ticket,
   plane,
   existingUserTickets,
-}: EditTicketFormProps) {
+}: EditTicketDialogButtonProps) {
   const editTicketForm = useForm<FormData>({
     resolver: zodResolver(updateTicketSchema),
     mode: "onChange",
@@ -120,7 +120,10 @@ export default function EditTicketDialog({
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>Edit Ticket</Button>
+        <Button variant="outline">
+          <Edit3Icon className="mr-2 h-4 w-4" />
+          Edit Ticket
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>

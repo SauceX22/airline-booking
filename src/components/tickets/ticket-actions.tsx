@@ -1,8 +1,15 @@
-"use client";
+import React from "react";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { type CreditCard, type Ticket } from "@prisma/client";
+import "next/navigation";
+
+import Link from "next/link";
+import {
+  type CreditCard,
+  type Flight,
+  type Plane,
+  type Ticket,
+} from "@prisma/client";
+import { ArrowLeftIcon, DeleteIcon, DollarSignIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -18,65 +25,38 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { pushModal } from "@/components/modals";
-import CardSelectionSheet from "@/components/modals/card-selection-sheet";
+import EditTicketDialogButton from "@/components/modals/edit-ticket-dialog";
+import TicketCancelDialogButton from "@/components/tickets/ticket-cancel-button";
+import TicketPaymentSheetButton from "@/components/tickets/ticket-payment-sheet-button";
 import { cn } from "@/lib/utils";
-import { api } from "@/trpc/client";
+import { api } from "@/trpc/server";
 
-interface TicketActionsProps {
-  ticket: Ticket;
-  cards: CreditCard[];
+interface TicketActionsProps extends React.HTMLAttributes<HTMLDivElement> {
+  ticket: Ticket & { Flight: Flight & { Plane: Plane } };
 }
 
-export function TicketItemActions({ ticket, cards }: TicketActionsProps) {
-  const router = useRouter();
-  const apiUtils = api.useUtils();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
-    onError(err) {
-      toast.error("Something went wrong.", {
-        description: err.message,
-      });
-    },
-    async onSuccess(data, variables, context) {
-      toast.success("Ticket cancelled", {
-        description: "Ticket cancelled successfully.",
-      });
-
-      await apiUtils.ticket.invalidate();
-      router.refresh();
-    },
+export async function TicketItemActions({
+  ticket,
+  className,
+}: TicketActionsProps) {
+  const creditCards = await api.creditCard.getAll.query();
+  const existingUserTickets = await api.ticket.getUserFlightTickets.query({
+    flightId: ticket.flightId,
   });
 
   return (
-    <>
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" className="w-full">
-            Cancel Ticket
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently cancel this
-              ticket and you will have to pay for the ticket again.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Back</AlertDialogCancel>
-            <AlertDialogAction
-              className={cn(buttonVariants({ variant: "destructive" }))}
-              onClick={async () => await cancelTicket({ ticketId: ticket.id })}>
-              Confirm Ticket Cancellation
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      {ticket.paymentStatus === "PENDING" && (
-        <CardSelectionSheet cards={cards} ticket={ticket} />
-      )}
-    </>
+    <div className={cn("flex items-center gap-2", className)}>
+      <Link className={buttonVariants({ variant: "outline" })} href="/tickets">
+        <ArrowLeftIcon className="mr-2 h-4 w-4" />
+        Back
+      </Link>
+      <EditTicketDialogButton
+        ticket={ticket}
+        plane={ticket.Flight.Plane}
+        existingUserTickets={existingUserTickets}
+      />
+      <TicketCancelDialogButton ticket={ticket} />
+      <TicketPaymentSheetButton cards={creditCards} ticket={ticket} />
+    </div>
   );
 }

@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { CreditCard, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { CircleCheckBigIcon, CreditCardIcon } from "lucide-react";
+import {
+  CircleCheckBigIcon,
+  CreditCardIcon,
+  DollarSignIcon,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -35,17 +39,17 @@ import { cn } from "@/lib/utils";
 import { ticketPaymentFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";
 
-type CardSelectionSheetProps = {
+type TicketPaymentSheetButtonProps = {
   ticket: Ticket;
   cards: CreditCard[];
 };
 
 type FormData = z.infer<typeof ticketPaymentFormSchema>;
 
-export default function CardSelectionSheet({
+export default function TicketPaymentSheetButton({
   cards,
   ticket,
-}: CardSelectionSheetProps) {
+}: TicketPaymentSheetButtonProps) {
   const { data: session } = useSession();
 
   const ticketPaymentForm = useForm<FormData>({
@@ -62,8 +66,9 @@ export default function CardSelectionSheet({
 
   const apiUtils = api.useUtils();
   const router = useRouter();
+  const isPaid = ticket.paymentStatus === "CONFIRMED";
 
-  const { mutateAsync: payTicket, isLoading } =
+  const { mutateAsync: payTicket, isLoading: isPaying } =
     api.ticket.payTicket.useMutation({
       onError(err) {
         toast.error("Something went wrong.", {
@@ -87,8 +92,9 @@ export default function CardSelectionSheet({
   return (
     <Sheet key="card-selection-sheet">
       <SheetTrigger asChild>
-        <Button variant="outline" className="w-full">
-          Pay Ticket
+        <Button size="sm" variant="default" disabled={isPaying || isPaid}>
+          <DollarSignIcon className="mr-2 h-4 w-4" />
+          {isPaid ? "Ticket Paid" : "Pay Ticket"}
         </Button>
       </SheetTrigger>
       <SheetContent>
@@ -158,7 +164,7 @@ export default function CardSelectionSheet({
               e.preventDefault();
               await handleSubmit(onSubmit)();
             }}
-            disabled={isLoading}>
+            disabled={isPaying}>
             Finish Payment
           </MotionButton>
         </SheetFooter>

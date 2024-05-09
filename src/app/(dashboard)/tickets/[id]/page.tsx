@@ -1,16 +1,11 @@
 import { unstable_noStore } from "next/cache";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { format, minutesToHours } from "date-fns";
 import { TicketIcon } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
-import { pushModal } from "@/components/modals";
-import EditTicketDialog from "@/components/modals/edit-ticket-dialog";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
-import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
@@ -33,15 +28,11 @@ export default async function TicketDetailsPage({
     return notFound();
   }
 
-  const existingUserTickets = await api.ticket.getUserFlightTickets.query({
-    flightId: ticket.flightId,
-  });
-
-  const creditCards = await api.creditCard.getAll.query();
-
   return (
     <DashboardShell>
-      <DashboardHeader heading={ticket?.Flight.name} text="Ticket Details" />
+      <DashboardHeader heading={ticket?.Flight.name} text="Ticket Details">
+        <TicketItemActions ticket={ticket} />
+      </DashboardHeader>
       <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg dark:bg-gray-950 sm:p-8 md:p-10 lg:p-12">
         <div className="grid gap-6">
           <div className="flex items-center justify-between">
@@ -203,20 +194,6 @@ export default async function TicketDetailsPage({
                 </span>
               </div>
             </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Link
-              className={buttonVariants({ variant: "outline" })}
-              href="/tickets">
-              Back
-            </Link>
-
-            <EditTicketDialog
-              ticket={ticket}
-              plane={ticket.Flight.Plane}
-              existingUserTickets={existingUserTickets}
-            />
-            <TicketItemActions ticket={ticket} cards={creditCards} />
           </div>
         </div>
       </div>
