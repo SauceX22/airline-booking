@@ -261,23 +261,23 @@ export default function EditTicketDialogButton({
                 />
               </CollapsibleContent>
             </Collapsible>
-            <DialogFooter>
-              <DialogClose className="w-full">
-                <Button onClick={(e) => e.preventDefault()} variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  await onSubmit(editTicketForm.getValues());
-                }}>
-                Save
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
+        <DialogFooter className="flex items-center justify-end">
+          <DialogClose asChild>
+            <Button onClick={(e) => e.preventDefault()} variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            type="submit"
+            onClick={async (e) => {
+              e.preventDefault();
+              await handleSubmit(onSubmit)();
+            }}>
+            Save
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
