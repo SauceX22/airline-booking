@@ -3,7 +3,7 @@ import { z } from "zod";
 import { newCardFormSchema } from "@/lib/validations/general";
 import {
   createTRPCRouter,
-  protectedManagerProcedure,
+  protectedAdminProcedure,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { userAuthRegisterSchema } from "@/lib/validations/auth";
 import {
   createTRPCRouter,
-  protectedManagerProcedure,
+  protectedAdminProcedure,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
@@ -43,7 +43,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  getAll: protectedManagerProcedure.query(async ({ ctx }) => {
+  getAll: protectedAdminProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {
         id: {
@@ -52,7 +52,7 @@ export const userRouter = createTRPCRouter({
       },
     });
   }),
-  getUser: protectedManagerProcedure
+  getUser: protectedAdminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.user.findUnique({ where: { id: input.id } });
@@ -71,7 +71,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  updateUser: protectedManagerProcedure
+  updateUser: protectedAdminProcedure
     .input(
       z
         .object({
@@ -95,7 +95,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  deleteUser: protectedManagerProcedure
+  deleteUser: protectedAdminProcedure
     .input(
       z.object({
         id: z.string(),
