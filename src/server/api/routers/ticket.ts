@@ -72,37 +72,18 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
-  getUserFlightTickets: protectedProcedure
+  getUserTickets: protectedProcedure
     .input(
       z.object({
-        flightId: z.string(),
+        flightId: z.string().optional(),
+        bookedById: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.ticket.findMany({
         where: {
           flightId: input.flightId,
-          bookedById: ctx.session.user.id,
-        },
-        include: {
-          Payment: {
-            include: {
-              Card: true,
-            },
-          },
-        },
-      });
-    }),
-  getUserTickets: protectedProcedure
-    .input(
-      z.object({
-        bookedById: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.ticket.findMany({
-        where: {
-          bookedById: ctx.session.user.id,
+          bookedById: input.bookedById ?? ctx.session.user.id,
         },
         include: {
           Payment: {

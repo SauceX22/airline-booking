@@ -1,16 +1,8 @@
 import { unstable_noStore } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { format, minutesToHours } from "date-fns";
-import { TicketIcon } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
