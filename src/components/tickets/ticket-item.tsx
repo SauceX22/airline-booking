@@ -7,6 +7,7 @@ import {
   CreditCardIcon,
   LuggageIcon,
   TicketIcon,
+  UserRound,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +31,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex items-center justify-start gap-3">
           <TicketIcon className="h-6 w-6" />
           <span className="text-xl font-semibold">Flight Details</span>
         </div>
@@ -45,8 +46,23 @@ export function TicketItem({ ticket }: TicketItemProps) {
           {ticket.paymentStatus === "CONFIRMED" ? "Confirmed" : "Pending"}
         </Badge>
       </CardHeader>
-      <CardContent className="py-2">
-        <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2 sm:grid-rows-2">
+      <Separator className="mb-4" />
+      <CardContent className="py-0">
+        <div className="col-span-2 mb-4 flex w-full items-start justify-start space-x-3">
+          <UserRound className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
+          <div className="flex w-fit flex-col items-start justify-start ">
+            <div className="text-sm font-medium text-muted-foreground">
+              Registered Passenger
+            </div>
+            <div className="max-w-[15rem] truncate text-nowrap text-lg font-semibold">
+              {ticket.passengerName}
+            </div>
+            <div className="text-md max-w-[15rem] truncate text-nowrap font-medium text-muted-foreground">
+              {ticket.passengerEmail}
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 sm:grid-rows-2">
           <div className="flex w-full items-start justify-start space-x-3">
             <Icons.flightDate className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
             <div className="flex w-fit flex-col items-start justify-start">
