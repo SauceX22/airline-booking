@@ -1,23 +1,6 @@
 import { unstable_noStore } from "next/cache";
 import { notFound } from "next/navigation";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { BookTicketSection } from "@/app/(dashboard)/flights/[id]/flight-booking-section";
@@ -54,14 +37,10 @@ export default async function FlightDetailsPage({
             : "Reserve this flight for your next adventure."
         }
       />
-      {isAdmin ? (
-        <></>
-      ) : (
-        <BookTicketSection
-          flight={flight}
-          existingUserTickets={existingUserTickets}
-        />
-      )}
+      <BookTicketSection
+        flight={flight}
+        existingUserTickets={existingUserTickets}
+      />
     </DashboardShell>
   );
 }

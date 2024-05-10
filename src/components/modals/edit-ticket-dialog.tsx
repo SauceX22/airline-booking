@@ -212,7 +212,7 @@ export default function EditTicketDialogButton({
                 disabled={isLoading}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "group flex w-full items-center justify-between"
+                  "group flex w-full items-center justify-between active:scale-100"
                 )}>
                 <span className="font-medium">Seat Selection</span>
                 <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
