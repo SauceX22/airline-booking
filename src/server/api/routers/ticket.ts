@@ -91,7 +91,10 @@ export const ticketRouter = createTRPCRouter({
       return await ctx.db.ticket.findMany({
         where: {
           flightId: input.filter?.flightId,
-          bookedById: ctx.session.user.id,
+          OR: [
+            { bookedById: ctx.session.user.id },
+            { passengerEmail: ctx.session.user.email },
+          ],
         },
         include: {
           Payment: {
@@ -99,6 +102,7 @@ export const ticketRouter = createTRPCRouter({
               Card: true,
             },
           },
+          BookedBy: true,
         },
       });
     }),
@@ -126,6 +130,7 @@ export const ticketRouter = createTRPCRouter({
               Card: true,
             },
           },
+          BookedBy: true,
         },
       });
     }),

@@ -25,10 +25,12 @@ import { cn } from "@/lib/utils";
 import { type User } from "@/server/auth";
 
 interface TicketItemProps {
-  ticket: Ticket & { Payment: PaymentTransaction | null; bookedBy: User };
+  ticket: Ticket & { Payment: PaymentTransaction | null; BookedBy: User };
 }
 
 export function TicketItem({ ticket }: TicketItemProps) {
+  const isAdmin = ticket.BookedBy.role === "ADMIN";
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -47,7 +49,22 @@ export function TicketItem({ ticket }: TicketItemProps) {
           {ticket.paymentStatus === "CONFIRMED" ? "Confirmed" : "Pending"}
         </Badge>
       </CardHeader>
-      <Separator className="mb-4" />
+      <div className="mb-2 flex h-fit flex-col items-center justify-start gap-0">
+        <Separator />
+        {isAdmin ? (
+          <Badge
+            variant="secondary"
+            className="rounded-t-none border-t-0 px-8 pb-1.5 text-xs font-medium text-muted-foreground">
+            Booked by Admin
+          </Badge>
+        ) : (
+          <Badge
+            variant="outline"
+            className="rounded-t-none border-t-0 px-8 pb-1.5 text-xs font-medium text-muted-foreground">
+            Booked by {ticket.BookedBy.name?.split(" ")[0] ?? "User"}
+          </Badge>
+        )}
+      </div>
       <CardContent className="py-0">
         <div className="col-span-2 mb-4 flex w-full items-start justify-start space-x-3">
           <UserRound className="my-auto h-6 w-6 shrink-0 grow-0 text-muted-foreground" />
