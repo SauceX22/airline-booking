@@ -18,7 +18,7 @@ export const creditCardRouter = createTRPCRouter({
           number: input.number,
           expiry: input.expiry,
           cvc: input.cvc,
-          User: { connect: { id: ctx.session.user.id } },
+          CardOwner: { connect: { id: ctx.session.user.id } },
         },
       });
     }),

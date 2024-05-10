@@ -147,18 +147,9 @@ export const ticketRouter = createTRPCRouter({
         data: {
           paymentStatus: "CONFIRMED",
           Payment: {
-            upsert: {
-              where: {
-                AND: [{ ticketId: input.ticketId }, { cardId: input.cardId }],
-              },
-              update: {
-                date: new Date(),
-                Card: { connect: { id: input.cardId } },
-              },
-              create: {
-                date: new Date(),
-                Card: { connect: { id: input.cardId } },
-              },
+            create: {
+              date: new Date(),
+              Card: { connect: { id: input.cardId } },
             },
           },
         },
