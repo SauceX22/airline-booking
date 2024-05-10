@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type {
@@ -80,6 +81,11 @@ export function BookTicketSection({
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
   const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+
+  const generatedPlaneSeats = useMemo(
+    () => generateAllPossibleSeats({ planeSeats: totalPlaneSeats }),
+    [totalPlaneSeats]
+  );
 
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
@@ -311,9 +317,7 @@ export function BookTicketSection({
                                   className="flex max-h-64 w-full flex-wrap items-start justify-evenly gap-2"
                                   onValueChange={field.onChange}
                                   value={field.value}>
-                                  {generateAllPossibleSeats({
-                                    planeSeats: totalPlaneSeats,
-                                  }).map((seat, index) => (
+                                  {generatedPlaneSeats.map((seat, index) => (
                                     <FormControl key={index}>
                                       <RadioGroupPrimitive.Item
                                         className={cn(
