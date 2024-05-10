@@ -1,19 +1,10 @@
-import { redirect } from "next/navigation";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { TicketItemActions } from "@/components/tickets/ticket-actions";
-import { auth } from "@/server/auth";
 
-export default async function TicketDetailsPageLoading() {
-  const session = await auth();
-
-  if (!session?.user) {
-    return redirect("/auth/login");
-  }
-
+export default function TicketDetailsPageLoading() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Loading..." text="Ticket Details">
