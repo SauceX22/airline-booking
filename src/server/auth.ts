@@ -16,9 +16,11 @@ import { db } from "@/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
+export type User = Omit<Prisma.User, "passwordHash">;
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: Omit<Prisma.User, "passwordHash">;
+    user: User;
   }
 }
 

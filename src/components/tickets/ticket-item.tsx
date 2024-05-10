@@ -22,9 +22,10 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { type User } from "@/server/auth";
 
 interface TicketItemProps {
-  ticket: Ticket & { Payment: PaymentTransaction | null };
+  ticket: Ticket & { Payment: PaymentTransaction | null; bookedBy: User };
 }
 
 export function TicketItem({ ticket }: TicketItemProps) {

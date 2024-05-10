@@ -1,10 +1,10 @@
-import { type User } from "@prisma/client";
+import { useMemo } from "react";
+import Image from "next/image";
 import { type AvatarProps } from "@radix-ui/react-avatar";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import Image from "next/image";
-import { useMemo } from "react";
+import { type User } from "@/server/auth";
 
 interface UserAvatarProps extends AvatarProps {
   user: Pick<User, "image" | "name" | "role">;
@@ -34,10 +34,9 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
       {...props}
       className={
         isAdmin
-          ? "outline-2 outline-offset-2 outline-dashed outline-orange-500"
+          ? "outline-dashed outline-2 outline-offset-2 outline-orange-500"
           : ""
-      }
-    >
+      }>
       {user.image ? (
         <AvatarImage alt="Picture" src={user.image} />
       ) : (

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import type { User } from "@prisma/client";
 import { signOut } from "next-auth/react";
 
 import { dashboardConfig } from "@/config/dashboard";
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/user-avatar";
 import { cn } from "@/lib/utils";
+import { type User } from "@/server/auth";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   user: Pick<User, "email" | "image" | "name" | "role">;
