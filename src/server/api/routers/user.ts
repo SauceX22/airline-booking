@@ -38,8 +38,10 @@ export const userRouter = createTRPCRouter({
 
       return await ctx.db.user.create({
         data: {
-          ...input,
+          email: input.email,
           passwordHash: hashedPassword,
+          name: input.name,
+          role: input.role,
         },
       });
     }),
