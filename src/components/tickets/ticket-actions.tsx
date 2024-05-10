@@ -4,9 +4,14 @@ import "next/navigation";
 
 import Link from "next/link";
 import { type Flight, type Plane, type Ticket } from "@prisma/client";
-import { ArrowLeftIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  CreditCardIcon,
+  Edit3Icon,
+  TicketIcon,
+} from "lucide-react";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import EditTicketDialogButton from "@/components/modals/edit-ticket-dialog";
 import TicketCancelDialogButton from "@/components/tickets/ticket-cancel-button";
 import TicketPaymentSheetButton from "@/components/tickets/ticket-payment-sheet-button";
@@ -48,3 +53,26 @@ export async function TicketItemActions({
     </div>
   );
 }
+
+TicketItemActions.Skeleton = function TicketItemActionsSkeleton() {
+  return (
+    <div className="flex items-center gap-2">
+      <Button disabled variant="outline">
+        <ArrowLeftIcon className="mr-2 h-4 w-4" />
+        Back
+      </Button>
+      <Button disabled variant="outline">
+        <Edit3Icon className="mr-2 h-4 w-4" />
+        Edit Ticket
+      </Button>
+      <Button disabled variant="destructive">
+        <TicketIcon className="mr-2 h-4 w-4" />
+        Cancel Ticket
+      </Button>
+      <Button disabled variant="default">
+        <CreditCardIcon className="mr-2 h-4 w-4" />
+        Payment
+      </Button>
+    </div>
+  );
+};
