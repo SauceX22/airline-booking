@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { PlaneIcon, TableIcon } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { cn } from "@/lib/utils";
@@ -42,46 +43,49 @@ export default async function PlanesPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Planes" text="Manage all airport planes." />
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {/* {planes */}
-        {planes.map((plane, index) => (
-          <Link
-            key={plane.id}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "w-fullO group relative flex h-fit flex-col items-center justify-start overflow-hidden rounded-xl p-0"
-            )}
-            href={`/planes/${plane.id}?image=${srcs[index % srcs.length]}`}
-            prefetch={false}>
-            <div className="aspect-[4/3] w-full">
-              <Image
-                alt="Plane Image"
-                className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
-                height={450}
-                src={srcs[index % srcs.length] ?? "/placeholder.svg"}
-                style={{
-                  aspectRatio: "600/450",
-                  objectFit: "cover",
-                }}
-                width={600}
-                quality={20}
-              />
-            </div>
-            <div className="flex w-full flex-col items-start justify-start gap-2 p-6">
-              <h3 className="text-lg font-semibold group-hover:text-foreground">
-                Boeing 747-400
-              </h3>
-              <div className="flex items-center gap-2">
-                <PlaneIcon className="mr-2 h-5 w-5 text-foreground" />
-                <span className="text-sm text-foreground">Wide-Body Jet</span>
+      <div className="px-2">
+        <Separator className="my-4" />
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {/* {planes */}
+          {planes.map((plane, index) => (
+            <Link
+              key={plane.id}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "w-fullO group relative flex h-fit flex-col items-center justify-start overflow-hidden rounded-xl p-0"
+              )}
+              href={`/planes/${plane.id}?image=${srcs[index % srcs.length]}`}
+              prefetch={false}>
+              <div className="aspect-[4/3] w-full">
+                <Image
+                  alt="Plane Image"
+                  className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+                  height={450}
+                  src={srcs[index % srcs.length] ?? "/placeholder.svg"}
+                  style={{
+                    aspectRatio: "600/450",
+                    objectFit: "cover",
+                  }}
+                  width={600}
+                  quality={20}
+                />
               </div>
-              <div className="flex items-center gap-2">
-                <TableIcon className="mr-2 h-5 w-5 text-foreground" />
-                <span className="text-sm text-foreground">416 seats</span>
+              <div className="flex w-full flex-col items-start justify-start gap-2 p-6">
+                <h3 className="text-lg font-semibold group-hover:text-foreground">
+                  Boeing 747-400
+                </h3>
+                <div className="flex items-center gap-2">
+                  <PlaneIcon className="mr-2 h-5 w-5 text-foreground" />
+                  <span className="text-sm text-foreground">Wide-Body Jet</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TableIcon className="mr-2 h-5 w-5 text-foreground" />
+                  <span className="text-sm text-foreground">416 seats</span>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
     </DashboardShell>
   );
