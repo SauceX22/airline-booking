@@ -12,10 +12,6 @@ import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
-type PlaneDetailsPageProps = {
-  params: { id: string };
-};
-
 const srcs = [
   "https://samchui.com/wp-content/uploads/2020/08/LAXD4595-720x480.jpg",
   "https://samchui.com/wp-content/uploads/2020/05/OS4A1324_Fotor-800x491.jpg",
@@ -32,9 +28,7 @@ const srcs = [
   "https://plus.unsplash.com/premium_photo-1679758630036-763dea47d87f?w=600&h=450&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGxhbmV8ZW58MHx8MHx8fDA%3D",
 ];
 
-export default async function PlaneDetailsPage({
-  params: { id: planeId },
-}: PlaneDetailsPageProps) {
+export default async function PlanesPage() {
   unstable_noStore();
   const session = await auth();
   const isAdmin = session?.user.role === "ADMIN";
