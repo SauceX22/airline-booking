@@ -33,6 +33,10 @@ export default async function PlanesPage() {
   const session = await auth();
   const isAdmin = session?.user.role === "ADMIN";
 
+  if (!session?.user || !isAdmin) {
+    return notFound();
+  }
+
   const planes = await api.plane.listPlanes.query();
 
   return (
