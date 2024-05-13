@@ -19,6 +19,12 @@ export const dashboardConfig: DashboardConfig = {
       icon: "ticket",
     },
     {
+      title: "Planes",
+      href: "/planes",
+      icon: "flight",
+      adminOnly: true,
+    },
+    {
       title: "Settings",
       href: "/settings",
       icon: "settings",
