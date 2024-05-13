@@ -25,6 +25,64 @@ export const planeRouter = createTRPCRouter({
         },
       });
     }),
+  getPlaneReport: protectedAdminProcedure
+    .input(
+      z.object({
+        planeId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const plane = await ctx.db.plane.findUnique({
+        where: { id: input.planeId },
+        include: {
+          Flights: {
+            include: {
+              Tickets: {
+                include: {
+                  Flight: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!plane) {
+        return null;
+      }
+
+      return {
+        ...plane,
+        Flights: plane.Flights.map((flight) => ({
+          ...flight,
+          bookingPercentage:
+            (flight.Tickets.length /
+              (plane.nEconomySeats +
+                plane.nBusinessSeats +
+                plane.nFirstClassSeats)) *
+            100,
+        })),
+        Statistics: {
+          averageLoadFactor:
+            (plane.Flights.reduce(
+              (acc, flight) =>
+                acc +
+                flight.Tickets.length /
+                  (plane.nEconomySeats +
+                    plane.nBusinessSeats +
+                    plane.nFirstClassSeats),
+              0
+            ) /
+              plane.Flights.length) *
+            100,
+          confirmedTickets: plane.Flights.flatMap((flight) =>
+            flight.Tickets.filter(
+              (ticket) => ticket.paymentStatus === "CONFIRMED"
+            )
+          ),
+        },
+      };
+    }),
   listPlanes: protectedAdminProcedure.query(async ({ ctx }) => {
     return await ctx.db.plane.findMany({
       orderBy: {
