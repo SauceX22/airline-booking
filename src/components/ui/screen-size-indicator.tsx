@@ -21,10 +21,6 @@ export const ScreenSize = () => {
     };
   }, []);
 
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   const { width, height } = dimensions;
 
   return (
