@@ -1,16 +1,18 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
-import { generateRandomSeat } from "@/lib/utils";
 import {
   newBookingFormSchema,
   updateTicketSchema,
 } from "@/lib/validations/general";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedAdminProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 
 export const ticketRouter = createTRPCRouter({
   createTickets: protectedProcedure
@@ -74,17 +76,25 @@ export const ticketRouter = createTRPCRouter({
         },
       });
     }),
-  getUserFlightTickets: protectedProcedure
+  getThisUserTickets: protectedProcedure
     .input(
       z.object({
-        flightId: z.string(),
+        filter: z
+          .object({
+            flightId: z.string(),
+          })
+          .partial()
+          .optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.ticket.findMany({
         where: {
-          flightId: input.flightId,
-          bookedById: ctx.session.user.id,
+          flightId: input.filter?.flightId,
+          OR: [
+            { bookedById: ctx.session.user.id },
+            { passengerEmail: ctx.session.user.email },
+          ],
         },
         include: {
           Payment: {
@@ -92,19 +102,27 @@ export const ticketRouter = createTRPCRouter({
               Card: true,
             },
           },
+          BookedBy: true,
         },
       });
     }),
-  getUserTickets: protectedProcedure
+  getAllTickets: protectedAdminProcedure
     .input(
       z.object({
-        bookedById: z.string(),
+        filter: z
+          .object({
+            flightId: z.string(),
+            bookedById: z.string(),
+          })
+          .partial()
+          .optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.ticket.findMany({
         where: {
-          bookedById: ctx.session.user.id,
+          flightId: input.filter?.flightId,
+          bookedById: input.filter?.bookedById,
         },
         include: {
           Payment: {
@@ -112,6 +130,7 @@ export const ticketRouter = createTRPCRouter({
               Card: true,
             },
           },
+          BookedBy: true,
         },
       });
     }),
@@ -128,18 +147,9 @@ export const ticketRouter = createTRPCRouter({
         data: {
           paymentStatus: "CONFIRMED",
           Payment: {
-            upsert: {
-              where: {
-                AND: [{ ticketId: input.ticketId }, { cardId: input.cardId }],
-              },
-              update: {
-                date: new Date(),
-                Card: { connect: { id: input.cardId } },
-              },
-              create: {
-                date: new Date(),
-                Card: { connect: { id: input.cardId } },
-              },
+            create: {
+              date: new Date(),
+              Card: { connect: { id: input.cardId } },
             },
           },
         },

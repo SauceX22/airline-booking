@@ -21,6 +21,18 @@ const config = {
       {
         hostname: "avatar.vercel.sh",
       },
+      {
+        hostname: "authjs.dev",
+      },
+      {
+        hostname: "samchui.com",
+      },
+      {
+        hostname: "images.unsplash.com",
+      },
+      {
+        hostname: "plus.unsplash.com",
+      },
     ],
     dangerouslyAllowSVG: true,
   },

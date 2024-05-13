@@ -1,13 +1,51 @@
+import { TRPCError } from "@trpc/server";
+import bcrypt from "bcrypt";
 import { z } from "zod";
 
+import { userAuthRegisterSchema } from "@/lib/validations/auth";
 import {
   createTRPCRouter,
-  protectedManagerProcedure,
+  protectedAdminProcedure,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
-  getAll: protectedManagerProcedure.query(async ({ ctx }) => {
+  register: publicProcedure
+    .input(userAuthRegisterSchema)
+    .mutation(async ({ ctx, input }) => {
+      const exists = await ctx.db.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (exists) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User with this email already exists",
+        });
+      }
+
+      let hashedPassword;
+      try {
+        hashedPassword = await bcrypt.hash(input.password, 10);
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to hash password",
+          cause: error,
+        });
+      }
+
+      return await ctx.db.user.create({
+        data: {
+          email: input.email,
+          passwordHash: hashedPassword,
+          name: input.name,
+          role: input.role,
+        },
+      });
+    }),
+  getAll: protectedAdminProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       where: {
         id: {
@@ -16,7 +54,7 @@ export const userRouter = createTRPCRouter({
       },
     });
   }),
-  getUser: protectedManagerProcedure
+  getUser: protectedAdminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.user.findUnique({ where: { id: input.id } });
@@ -35,7 +73,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  updateUser: protectedManagerProcedure
+  updateUser: protectedAdminProcedure
     .input(
       z
         .object({
@@ -59,7 +97,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  deleteUser: protectedManagerProcedure
+  deleteUser: protectedAdminProcedure
     .input(
       z.object({
         id: z.string(),

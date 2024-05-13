@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  protectedManagerProcedure,
+  protectedAdminProcedure,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
@@ -89,7 +89,7 @@ export const flightRouter = createTRPCRouter({
 
     return Array.from(cities);
   }),
-  deleteFlight: protectedManagerProcedure
+  deleteFlight: protectedAdminProcedure
     .input(
       z.object({
         id: z.string(),

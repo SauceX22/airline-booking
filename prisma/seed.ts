@@ -42,7 +42,7 @@ function generateRandomDuration(): number {
 function hasConflictingFlight(
   date: Date,
   duration: number,
-  existingFlights: { date: Date; duration: number }[],
+  existingFlights: { date: Date; duration: number }[]
 ): boolean {
   const flightStart = date;
   const flightEnd = addMinutes(date, duration);
@@ -50,13 +50,13 @@ function hasConflictingFlight(
     const existingFlightStart = existingFlight.date;
     const existingFlightEnd = addMinutes(
       existingFlight.date,
-      existingFlight.duration,
+      existingFlight.duration
     );
     if (
       areIntervalsOverlapping(
         { start: existingFlightStart, end: existingFlightEnd },
         { start: flightStart, end: flightEnd },
-        { inclusive: false },
+        { inclusive: false }
       )
     ) {
       return true; // Conflict found
@@ -107,7 +107,7 @@ async function createFlights() {
 
   // pick a random city from the list for each flight source and destination, pick a random UPCOMING date, and pick a random plane
   // do that 100 times
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 30; i++) {
     const flightName = generateFlightName(airlines);
     const source = safeRandomPick(cities);
     const destination = safeRandomPick(cities);
@@ -150,7 +150,7 @@ async function main() {
   const TIMER = 2;
   console.warn("----------------------------------------");
   console.warn(
-    "ATTENTION: This script will CLEAR the database and re-seed it with test data.",
+    "ATTENTION: This script will CLEAR the database and re-seed it with test data."
   );
   console.warn(`Press Ctrl + C to cancel, clearing within ${TIMER} seconds...`);
   console.warn("----------------------------------------");
@@ -160,7 +160,7 @@ async function main() {
     async () => {
       await db.plane.deleteMany({});
       await db.flight.deleteMany({});
-    },
+    }
   );
 
   await createData();

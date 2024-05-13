@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type {
@@ -80,6 +81,11 @@ export function BookTicketSection({
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
   const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+
+  const generatedPlaneSeats = useMemo(
+    () => generateAllPossibleSeats({ planeSeats: totalPlaneSeats }),
+    [totalPlaneSeats]
+  );
 
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
@@ -294,7 +300,7 @@ export function BookTicketSection({
                     <CollapsibleTrigger
                       className={cn(
                         buttonVariants({ variant: "outline" }),
-                        "group flex w-full items-center justify-between"
+                        "group flex w-full items-center justify-between active:scale-100"
                       )}>
                       <span className="font-medium">Seat Selection</span>
                       <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
@@ -311,9 +317,7 @@ export function BookTicketSection({
                                   className="flex max-h-64 w-full flex-wrap items-start justify-evenly gap-2"
                                   onValueChange={field.onChange}
                                   value={field.value}>
-                                  {generateAllPossibleSeats({
-                                    planeSeats: totalPlaneSeats,
-                                  }).map((seat, index) => (
+                                  {generatedPlaneSeats.map((seat, index) => (
                                     <FormControl key={index}>
                                       <RadioGroupPrimitive.Item
                                         className={cn(
@@ -342,7 +346,6 @@ export function BookTicketSection({
                                 <ScrollBar orientation="horizontal" />
                               </ScrollArea>
                             </FormControl>
-
                             <FormMessage>
                               {errors.passengers?.[0]?.seat?.message}
                             </FormMessage>
@@ -412,7 +415,6 @@ export function BookTicketSection({
                         ) : (
                           <CircleXIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-destructive" />
                         )}
-
                         <span className="flex flex-col items-start text-sm">
                           {ticket.passengerName}
                           <span className="flex items-start text-xs text-muted-foreground">
@@ -492,17 +494,16 @@ export function BookTicketSection({
                   : 0}
               </span>
             </div>
-            <div className="flex items-center justify-between text-sm font-semibold">
-              Note: you&apos;ll be paying for the ticket later through the
-              tickets menu.
+            <div className="mx-auto text-xs font-semibold text-muted-foreground">
+              You won&apos;t be charged for this flight until you confirm your
+              reservation.
             </div>
           </div>
         </div>
         <div className="space-y-2">
           <Button
-            className="w-full border-background hover:border-background/80 hover:bg-background/80"
+            className="w-full border-background"
             size="lg"
-            variant="outline"
             onClick={async (e) => {
               e.preventDefault();
               await newBookingForm.handleSubmit((data) => onSubmit(data))();

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { type SidebarNavItem } from "@/types";
-import { useSession } from "next-auth/react";
 
 interface DashboardNavProps {
   items: SidebarNavItem[];
@@ -23,7 +23,7 @@ export function DashboardNav({ items }: DashboardNavProps) {
   return (
     <nav className="grid items-start gap-1">
       {items.map((item, index) => {
-        if (item.managerOnly && session?.user.role !== "ADMIN") {
+        if (item.adminOnly && session?.user.role !== "ADMIN") {
           return null;
         }
 
@@ -34,10 +34,12 @@ export function DashboardNav({ items }: DashboardNavProps) {
               <span
                 className={cn(
                   "group flex items-center rounded-md px-3 py-3 text-base font-medium hover:bg-accent hover:text-accent-foreground",
+                  session?.user.role === "ADMIN" && item.adminOnly
+                    ? "border border-dashed border-orange-500"
+                    : "",
                   path === item.href ? "bg-accent" : "transparent",
-                  item.disabled && "cursor-not-allowed opacity-80",
-                )}
-              >
+                  item.disabled && "cursor-not-allowed opacity-80"
+                )}>
                 <Icon className="mr-2 h-4 w-4" />
                 <span>{item.title}</span>
               </span>

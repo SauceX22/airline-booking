@@ -1,8 +1,6 @@
 import { type Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
@@ -18,20 +16,21 @@ export const metadata: Metadata = {
 
 export default async function TicketsPage() {
   const session = await auth();
+  const isAdmin = session?.user.role === "ADMIN";
 
   if (!session?.user) {
     redirect("/auth/login");
   }
 
-  const userTickets = await api.ticket.getUserTickets.query({
-    bookedById: session.user.id,
-  });
+  const userTickets = isAdmin
+    ? await api.ticket.getAllTickets.query({})
+    : await api.ticket.getThisUserTickets.query({});
 
   return (
     <DashboardShell>
       <DashboardHeader heading="Tickets" text="Your booked tickets." />
-      <Separator className="mb-4" />
       <div className="px-2">
+        <Separator className="mb-4" />
         {userTickets.length ? (
           <div className="grid grid-cols-3 gap-4">
             {userTickets.map((ticket) => (
@@ -49,14 +48,15 @@ export default async function TicketsPage() {
               </div>
             </div>
             <h2 className={cn("mt-6 text-xl font-semibold")}>
-              No tickets available
+              No tickets found
             </h2>
             <p
               className={cn(
                 "mb-8 mt-2 text-center text-sm font-normal leading-6 text-muted-foreground"
               )}>
-              There are no tickets available for rent at the moment. Please
-              check back later.
+              {isAdmin
+                ? "No tickets have been booked by your users yet. Please check back later."
+                : "You have not booked any tickets yet."}
             </p>
           </div>
         )}

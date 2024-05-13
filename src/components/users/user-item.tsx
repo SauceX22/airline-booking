@@ -1,4 +1,4 @@
-import { type User } from "@prisma/client";
+import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { type User } from "@/server/auth";
+
 import { UserAvatar } from "../user-avatar";
 
 interface UserItemProps {
@@ -19,20 +20,19 @@ interface UserItemProps {
 export function UserItem({ user }: UserItemProps) {
   return (
     <Card className="flex items-center justify-between p-2">
-      <CardHeader className="flex flex-row items-center justify-start text-xl font-bold gap-4 flex-shrink-0">
+      <CardHeader className="flex flex-shrink-0 flex-row items-center justify-start gap-4 text-xl font-bold">
         <UserAvatar user={user} />
         {user.name}
       </CardHeader>
-      <CardContent className="flex flex-row h-full w-full justify-between gap-8 items-center p-4">
-        <span className="text-sm font-normal text-muted-foreground text-left">
+      <CardContent className="flex h-full w-full flex-row items-center justify-between gap-8 p-4">
+        <span className="text-left text-sm font-normal text-muted-foreground">
           {user.email}
         </span>
         <span
           className={cn(
             "text-sm font-normal",
-            user.enabled ? "text-green-500" : "text-red-500",
-          )}
-        >
+            user.enabled ? "text-green-500" : "text-red-500"
+          )}>
           {user.enabled ? "Enabled" : "Disabled"}
         </span>
       </CardContent>

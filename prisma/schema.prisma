@@ -75,6 +75,7 @@ enum Gender {
 model User {
     id            String    @id @default(cuid())
     name          String?
+    passwordHash  String?
     email         String    @unique
     emailVerified DateTime?
     image         String?
@@ -140,14 +141,13 @@ enum SeatClass {
 }
 
 model Ticket {
-    id          String    @id @default(cuid())
-    weightKG    Int
-    bookingDate DateTime  @default(now())
-    seat        String
-    class       SeatClass @default(ECONOMY)
+    id       String    @id @default(cuid())
+    weightKG Int
+    seat     String
+    class    SeatClass @default(ECONOMY)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    bookingDate DateTime @default(now()) @map("createdAt")
+    updatedAt   DateTime @updatedAt
 
     passengerName  String
     passengerEmail String
@@ -170,16 +170,14 @@ model Ticket {
 model PaymentTransaction {
     date DateTime @default(now()) @map("createdAt")
 
-    Card   CreditCard @relation(fields: [cardId, userId], references: [id, userId], onDelete: Cascade)
-    cardId String
+    Card    CreditCard @relation(fields: [cardId, payerId], references: [id, cardOwnerId], onDelete: Cascade)
+    cardId  String
+    payerId String
 
-    Ticket   Ticket @relation(fields: [ticketId, userId], references: [id, bookedById], onDelete: Cascade)
-    ticketId String
-
-    userId String
+    Ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+    ticketId String @unique
 
     @@id([cardId, ticketId])
-    @@unique([ticketId, userId])
 }
 
 model CreditCard {
@@ -189,11 +187,11 @@ model CreditCard {
     expiry String
     cvc    String
 
-    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String
+    CardOwner   User   @relation(fields: [cardOwnerId], references: [id], onDelete: Cascade)
+    cardOwnerId String
 
     PaymentTransactions PaymentTransaction[]
 
-    @@unique([id, userId])
-    @@index([userId])
+    @@unique([id, cardOwnerId])
+    @@index([cardOwnerId])
 }

@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type User } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
@@ -22,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { userAuthRegisterSchema } from "@/lib/validations/auth";
+import { type User } from "@/server/auth";
 import { api } from "@/trpc/client";
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {

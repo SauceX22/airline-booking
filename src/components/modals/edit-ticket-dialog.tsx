@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, DeleteIcon, Edit3Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -53,17 +53,17 @@ import { api } from "@/trpc/client";
 
 type FormData = z.infer<typeof updateTicketSchema>;
 
-type EditTicketFormProps = {
+type EditTicketDialogButtonProps = {
   ticket: Ticket;
   plane: Plane;
   existingUserTickets: Ticket[];
 };
 
-export default function EditTicketDialog({
+export default function EditTicketDialogButton({
   ticket,
   plane,
   existingUserTickets,
-}: EditTicketFormProps) {
+}: EditTicketDialogButtonProps) {
   const editTicketForm = useForm<FormData>({
     resolver: zodResolver(updateTicketSchema),
     mode: "onChange",
@@ -120,7 +120,10 @@ export default function EditTicketDialog({
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>Edit Ticket</Button>
+        <Button variant="outline">
+          <Edit3Icon className="mr-2 h-4 w-4" />
+          Edit Ticket
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -209,7 +212,7 @@ export default function EditTicketDialog({
                 disabled={isLoading}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "group flex w-full items-center justify-between"
+                  "group flex w-full items-center justify-between active:scale-100"
                 )}>
                 <span className="font-medium">Seat Selection</span>
                 <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
@@ -258,23 +261,23 @@ export default function EditTicketDialog({
                 />
               </CollapsibleContent>
             </Collapsible>
-            <DialogFooter>
-              <DialogClose className="w-full">
-                <Button onClick={(e) => e.preventDefault()} variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  await onSubmit(editTicketForm.getValues());
-                }}>
-                Save
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
+        <DialogFooter className="flex items-center justify-end">
+          <DialogClose asChild>
+            <Button onClick={(e) => e.preventDefault()} variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            type="submit"
+            onClick={async (e) => {
+              e.preventDefault();
+              await handleSubmit(onSubmit)();
+            }}>
+            Save
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

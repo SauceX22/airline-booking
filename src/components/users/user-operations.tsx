@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-
+import { type User } from "@/server/auth";
 import { api } from "@/trpc/client";
-import { type User } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 type UserOperationsProps = {
   user: User;
@@ -73,8 +73,7 @@ export function UserOperations({ user, className }: UserOperationsProps) {
               //   id: user.id,
               //   enabled: !user.enabled,
               // });
-            }}
-          >
+            }}>
             Enabled
           </DropdownMenuCheckboxItem>
           <DropdownMenuSeparator />
@@ -82,8 +81,7 @@ export function UserOperations({ user, className }: UserOperationsProps) {
             onClick={() => {
               setShowDeleteDialog(true);
             }}
-            variant="destructive"
-          >
+            variant="destructive">
             Delete
             <DropdownMenuShortcut>Delete</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -106,8 +104,7 @@ export function UserOperations({ user, className }: UserOperationsProps) {
                 await deleteUser({
                   id: user.id,
                 });
-              }}
-            >
+              }}>
               Delete User
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -1,5 +1,6 @@
-import { type Icons } from "@/components/icons";
 import { type LucideIcon } from "lucide-react";
+
+import { type Icons } from "@/components/icons";
 
 export type NavItem = {
   title: string;
@@ -14,7 +15,7 @@ export type SidebarNavItem = {
   disabled?: boolean;
   href: string;
   external?: boolean;
-  managerOnly?: boolean;
+  adminOnly?: boolean;
   icon?: keyof typeof Icons;
 };
 
