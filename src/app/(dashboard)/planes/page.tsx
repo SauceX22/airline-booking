@@ -1,4 +1,5 @@
 import { unstable_noStore } from "next/cache";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
@@ -43,28 +44,29 @@ export default async function PlaneDetailsPage({
   return (
     <DashboardShell>
       <DashboardHeader heading="Planes" text="Manage all airport planes." />
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {/* {planes */}
         {planes.map((plane, index) => (
           <Link
             key={plane.id}
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "group relative flex h-fit w-fit flex-col items-center justify-start overflow-hidden rounded-xl p-0"
+              "w-fullO group relative flex h-fit flex-col items-center justify-start overflow-hidden rounded-xl p-0"
             )}
-            href={`/planes/${plane.id}`}
+            href={`/planes/${plane.id}?image=${srcs[index % srcs.length]}`}
             prefetch={false}>
             <div className="aspect-[4/3] w-full">
-              <img
+              <Image
                 alt="Plane Image"
                 className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
                 height={450}
-                src={srcs[index % srcs.length]}
+                src={srcs[index % srcs.length] ?? "/placeholder.svg"}
                 style={{
                   aspectRatio: "600/450",
                   objectFit: "cover",
                 }}
                 width={600}
+                quality={20}
               />
             </div>
             <div className="flex w-full flex-col items-start justify-start gap-2 p-6">
