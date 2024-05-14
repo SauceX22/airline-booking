@@ -46,7 +46,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
               : "destructive"
           }>
           <CircleCheck className="h-4 w-4" />
-          {ticket.status === "CONFIRMED" ? "Confirmed" : "Pending"}
+          {ticket.status}
         </Badge>
       </CardHeader>
       <div className="mb-2 flex h-fit flex-col items-center justify-start gap-0">
@@ -150,7 +150,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Status
                 </div>
                 <div className="text-nowrap text-xl font-semibold">
-                  {ticket.status === "CONFIRMED" ? "Paid" : "Pending"}
+                  {ticket.status}
                 </div>
               </div>
             </div>

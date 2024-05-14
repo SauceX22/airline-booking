@@ -63,7 +63,7 @@ export default async function TicketDetailsPage({
                     ? "text-success"
                     : "text-destructive"
                 )}>
-                {ticket.status === "CONFIRMED" ? "Paid" : "Pending"}
+                  {ticket.status}
               </div>
               <div className="text-muted-foreground">Payment Date:</div>
               <div className="col-span-2">

@@ -32,7 +32,7 @@ export default function TicketCancelDialogButton({
   const apiUtils = api.useUtils();
   const router = useRouter();
 
-  const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
+  const { mutateAsync: cancelTicket } = api.ticket.cancelTicket.useMutation({
     onError(err) {
       toast.error("Something went wrong.", {
         description: err.message,
