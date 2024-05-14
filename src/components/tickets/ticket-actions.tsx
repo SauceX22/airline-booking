@@ -20,7 +20,7 @@ import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
 interface TicketActionsProps extends React.HTMLAttributes<HTMLDivElement> {
-  ticket: Ticket & { Flight: Flight & { Plane: Plane } };
+  ticket: Ticket & { Flight: Flight & { Plane: Plane, Tickets: Ticket[] } };
 }
 
 export async function TicketItemActions({
@@ -43,8 +43,6 @@ export async function TicketItemActions({
       </Link>
       <EditTicketDialogButton
         ticket={ticket}
-        plane={ticket.Flight.Plane}
-        existingUserTickets={existingUserTickets}
       />
       <TicketCancelDialogButton ticket={ticket} />
       {!isAdmin && (

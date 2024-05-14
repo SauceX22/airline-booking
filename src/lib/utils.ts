@@ -78,3 +78,13 @@ export function generateRandomSeat({
     }
   } while (true); // Keep generating until a unique seat name is found
 }
+
+export type FineCause = "CANCELLED" | "MISSED";
+
+export function getFine({ ticketPrice, cause }: {ticketPrice: number; cause: FineCause }) {
+  if (cause === "CANCELLED") {
+    return ticketPrice * 0.2;
+  } else  {
+    return ticketPrice * 0.1;
+  }
+}

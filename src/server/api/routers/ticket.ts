@@ -13,6 +13,7 @@ import {
   protectedAdminProcedure,
   protectedProcedure,
 } from "@/server/api/trpc";
+import { getFine } from "@/lib/utils";
 
 export const ticketRouter = createTRPCRouter({
   createTickets: protectedProcedure
@@ -30,7 +31,7 @@ export const ticketRouter = createTRPCRouter({
           class: seatClass,
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
-          paymentStatus: "PENDING",
+          status: "PENDING",
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),
@@ -66,6 +67,7 @@ export const ticketRouter = createTRPCRouter({
           Flight: {
             include: {
               Plane: true,
+              Tickets: true,
             },
           },
           Payment: {
@@ -145,11 +147,38 @@ export const ticketRouter = createTRPCRouter({
       return await ctx.db.ticket.update({
         where: { id: input.ticketId },
         data: {
-          paymentStatus: "CONFIRMED",
+          status: "CONFIRMED",
           Payment: {
             create: {
               date: new Date(),
               Card: { connect: { id: input.cardId } },
+            },
+          },
+        },
+      });
+    }),
+  cancelTicket: protectedProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const ticket = await ctx.db.ticket.findUniqueOrThrow({
+        where: { id: input.ticketId },
+        include: {
+          BookedBy: true,
+        },
+      });
+      const cancellationFine = getFine({ticketPrice: ticket.price, cause: "CANCELLED"});
+
+      return await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          status: "CANCELLED",
+          BookedBy: {
+            update: {
+              fine: ticket.BookedBy.fine + cancellationFine,
             },
           },
         },

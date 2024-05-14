@@ -66,7 +66,7 @@ export default function TicketPaymentSheetButton({
   const { data: session } = useSession();
   const apiUtils = api.useUtils();
   const router = useRouter();
-  const isPaid = ticket.paymentStatus === "CONFIRMED";
+  const isPaid = ticket.status === "CONFIRMED";
   const [isOpen, setIsOpen] = useState(false);
 
   const { mutateAsync: payTicket, isLoading: isPaying } =

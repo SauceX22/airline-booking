@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { type User } from "@/server/auth";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: Pick<User, "email" | "image" | "name" | "role">;
+  user: Pick<User, "email" | "image" | "name" | "role" | "fine">;
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -48,6 +48,15 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
               )}>
               {user.role}
             </Badge>
+            {user.role !== "ADMIN" && (
+            <Badge
+              variant="secondary"
+              className=
+                "pointer-events-none flex w-full flex-shrink-0 items-center justify-center rounded-md py-1 text-xs"
+            >
+                ${user.fine} fine
+              </Badge>
+            )}
           </div>
         </div>
         <DropdownMenuSeparator />

@@ -18,8 +18,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getFine } from "@/lib/utils";
 import { api } from "@/trpc/client";
+import { Badge } from "@/components/ui/badge";
 
 type TicketCancelDialogButtonProps = {
   ticket: Ticket;
@@ -32,7 +33,7 @@ export default function TicketCancelDialogButton({
   const apiUtils = api.useUtils();
   const router = useRouter();
 
-  const { mutateAsync: cancelTicket } = api.ticket.deleteTicket.useMutation({
+  const { mutateAsync: cancelTicket } = api.ticket.cancelTicket.useMutation({
     onError(err) {
       toast.error("Something went wrong.", {
         description: err.message,
@@ -44,6 +45,7 @@ export default function TicketCancelDialogButton({
       });
 
       await apiUtils.ticket.invalidate();
+      router.push("/tickets");
       router.refresh();
     },
   });
@@ -51,7 +53,9 @@ export default function TicketCancelDialogButton({
   return (
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="w-full">
+        <Button variant="destructive" className="w-full"
+          disabled={ticket.status === "CANCELLED"}
+        >
           <XIcon className="mr-2 h-4 w-4" />
           Cancel Ticket
         </Button>
@@ -59,9 +63,12 @@ export default function TicketCancelDialogButton({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <Badge variant="destructive" className="w-fit">
+            You will be charged a ${getFine({ticketPrice: ticket.price, cause: "CANCELLED"})} fine.
+          </Badge>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently cancel this
-            ticket and you will have to pay for the ticket again.
+            ticket and you will have to reserve the ticket again.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

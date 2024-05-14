@@ -85,7 +85,7 @@ export function BookTicketSection({
     flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
-  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
 
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
@@ -436,7 +436,7 @@ export function BookTicketSection({
                       className="mb-2 flex items-center justify-between"
                       key={ticket.id}>
                       <span className="flex items-center gap-2 truncate text-nowrap font-semibold text-foreground">
-                        {ticket.paymentStatus === "CONFIRMED" &&
+                        {ticket.status === "CONFIRMED" &&
                         ticket.Payment?.date ? (
                           <CircleCheckIcon className="my-auto h-5 w-5 shrink-0 grow-0 text-success" />
                         ) : (

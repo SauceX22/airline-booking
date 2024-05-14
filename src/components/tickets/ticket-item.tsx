@@ -32,7 +32,11 @@ export function TicketItem({ ticket }: TicketItemProps) {
   const isAdmin = ticket.BookedBy.role === "ADMIN";
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md"
+      style={{
+        opacity: ticket.status === "CANCELLED" ? 0.5 : 1,
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <TicketIcon className="h-6 w-6" />
@@ -41,12 +45,12 @@ export function TicketItem({ ticket }: TicketItemProps) {
         <Badge
           className="pointer-events-none w-fit select-none gap-1 px-1.5 text-sm font-medium"
           variant={
-            ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+            ticket.status === "CONFIRMED" && ticket.Payment?.date
               ? "success"
               : "destructive"
           }>
           <CircleCheck className="h-4 w-4" />
-          {ticket.paymentStatus === "CONFIRMED" ? "Confirmed" : "Pending"}
+          {ticket.status}
         </Badge>
       </CardHeader>
       <div className="mb-2 flex h-fit flex-col items-center justify-start gap-0">
@@ -137,7 +141,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Payment Date
                 </div>
                 <div className="text-nowrap text-lg font-semibold">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                  {ticket.status === "CONFIRMED" && ticket.Payment?.date
                     ? format(ticket.Payment?.date, "MMM do, yyy")
                     : "-"}
                 </div>
@@ -150,7 +154,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Status
                 </div>
                 <div className="text-nowrap text-xl font-semibold">
-                  {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
+                  {ticket.status}
                 </div>
               </div>
             </div>

@@ -59,11 +59,11 @@ export default async function TicketDetailsPage({
               <div
                 className={cn(
                   "col-span-2",
-                  ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                  ticket.status === "CONFIRMED" && ticket.Payment?.date
                     ? "text-success"
                     : "text-destructive"
                 )}>
-                {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
+                  {ticket.status}
               </div>
               <div className="text-muted-foreground">Payment Date:</div>
               <div className="col-span-2">
