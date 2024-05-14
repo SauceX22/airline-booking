@@ -77,7 +77,7 @@ export const planeRouter = createTRPCRouter({
             100,
           confirmedTickets: plane.Flights.flatMap((flight) =>
             flight.Tickets.filter(
-              (ticket) => ticket.paymentStatus === "CONFIRMED"
+              (ticket) => ticket.status === "CONFIRMED"
             )
           ),
         },

@@ -41,12 +41,12 @@ export function TicketItem({ ticket }: TicketItemProps) {
         <Badge
           className="pointer-events-none w-fit select-none gap-1 px-1.5 text-sm font-medium"
           variant={
-            ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+            ticket.status === "CONFIRMED" && ticket.Payment?.date
               ? "success"
               : "destructive"
           }>
           <CircleCheck className="h-4 w-4" />
-          {ticket.paymentStatus === "CONFIRMED" ? "Confirmed" : "Pending"}
+          {ticket.status === "CONFIRMED" ? "Confirmed" : "Pending"}
         </Badge>
       </CardHeader>
       <div className="mb-2 flex h-fit flex-col items-center justify-start gap-0">
@@ -137,7 +137,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Payment Date
                 </div>
                 <div className="text-nowrap text-lg font-semibold">
-                  {ticket.paymentStatus === "CONFIRMED" && ticket.Payment?.date
+                  {ticket.status === "CONFIRMED" && ticket.Payment?.date
                     ? format(ticket.Payment?.date, "MMM do, yyy")
                     : "-"}
                 </div>
@@ -150,7 +150,7 @@ export function TicketItem({ ticket }: TicketItemProps) {
                   Status
                 </div>
                 <div className="text-nowrap text-xl font-semibold">
-                  {ticket.paymentStatus === "CONFIRMED" ? "Paid" : "Pending"}
+                  {ticket.status === "CONFIRMED" ? "Paid" : "Pending"}
                 </div>
               </div>
             </div>

@@ -30,7 +30,7 @@ export const ticketRouter = createTRPCRouter({
           class: seatClass,
           weightKG: SeatClassWeightRestriction[seatClass],
           price: SeatClassPriceRestriction[seatClass],
-          paymentStatus: "PENDING",
+          status: "PENDING",
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),
@@ -145,13 +145,27 @@ export const ticketRouter = createTRPCRouter({
       return await ctx.db.ticket.update({
         where: { id: input.ticketId },
         data: {
-          paymentStatus: "CONFIRMED",
+          status: "CONFIRMED",
           Payment: {
             create: {
               date: new Date(),
               Card: { connect: { id: input.cardId } },
             },
           },
+        },
+      });
+    }),
+  cancelTicket: protectedProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          status: "CANCELLED",
         },
       });
     }),
