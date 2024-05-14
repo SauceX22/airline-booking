@@ -59,11 +59,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return {
         expires: session.expires,
         user: {
+          ...user,
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role,
         },
       };
     },

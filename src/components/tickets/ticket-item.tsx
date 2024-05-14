@@ -32,7 +32,11 @@ export function TicketItem({ ticket }: TicketItemProps) {
   const isAdmin = ticket.BookedBy.role === "ADMIN";
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md"
+      style={{
+        opacity: ticket.status === "CANCELLED" ? 0.5 : 1,
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <TicketIcon className="h-6 w-6" />
