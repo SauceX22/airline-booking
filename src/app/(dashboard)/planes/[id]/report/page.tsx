@@ -262,7 +262,6 @@ export default async function PlaneReportPage({
             </CardHeader>
             <CardContent className="grid gap-4">
               <Table>
-                {/* TODO: add table caption */}
                 <TableCaption>
                   A list of passengers who have cancelled their tickets
                 </TableCaption>
@@ -273,28 +272,15 @@ export default async function PlaneReportPage({
                     <TableHead>Reason</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>Sarah Lee</TableCell>
-                    <TableCell>Flight #123</TableCell>
-                    <TableCell>Personal</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>David Kim</TableCell>
-                    <TableCell>Flight #456</TableCell>
-                    <TableCell>Work conflict</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Olivia Patel</TableCell>
-                    <TableCell>Flight #789</TableCell>
-                    <TableCell>Medical</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Alex Gonzalez</TableCell>
-                    <TableCell>Flight #321</TableCell>
-                    <TableCell>Travel plans changed</TableCell>
-                  </TableRow>
-                </TableBody>
+                  <TableBody>
+                    {plane.Statistics.cancelledTickets.map((ticket) => (
+                      <TableRow key={ticket.id}>
+                        <TableCell>{ticket.passengerName}</TableCell>
+                        <TableCell>{ticket.Flight.name}</TableCell>
+                        <TableCell>Cancelled</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
               </Table>
             </CardContent>
           </Card>

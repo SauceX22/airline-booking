@@ -80,6 +80,11 @@ export const planeRouter = createTRPCRouter({
               (ticket) => ticket.status === "CONFIRMED"
             )
           ),
+          cancelledTickets: plane.Flights.flatMap((flight) =>
+            flight.Tickets.filter(
+              (ticket) => ticket.status === "CANCELLED"
+            )
+          ),
         },
       };
     }),
