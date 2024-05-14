@@ -67,6 +67,7 @@ export const ticketRouter = createTRPCRouter({
           Flight: {
             include: {
               Plane: true,
+              Tickets: true,
             },
           },
           Payment: {
@@ -170,7 +171,7 @@ export const ticketRouter = createTRPCRouter({
         },
       });
       const cancellationFine = getFine({ticketPrice: ticket.price, cause: "CANCELLED"});
-      
+
       return await ctx.db.ticket.update({
         where: { id: input.ticketId },
         data: {

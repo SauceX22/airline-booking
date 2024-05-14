@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Plane, Ticket } from "@prisma/client";
+import type { Flight, Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { ChevronDownIcon, DeleteIcon, Edit3Icon } from "lucide-react";
+import { ChevronDownIcon, Edit3Icon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -54,15 +54,11 @@ import { api } from "@/trpc/client";
 type FormData = z.infer<typeof updateTicketSchema>;
 
 type EditTicketDialogButtonProps = {
-  ticket: Ticket;
-  plane: Plane;
-  existingUserTickets: Ticket[];
+  ticket: Ticket & { Flight: Flight & { Plane: Plane, Tickets: Ticket[] } };
 };
 
 export default function EditTicketDialogButton({
   ticket,
-  plane,
-  existingUserTickets,
 }: EditTicketDialogButtonProps) {
   const editTicketForm = useForm<FormData>({
     resolver: zodResolver(updateTicketSchema),
@@ -86,9 +82,7 @@ export default function EditTicketDialogButton({
   const apiUtils = api.useUtils();
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const totalPlaneSeats =
-    plane.nFirstClassSeats + plane.nEconomySeats + plane.nBusinessSeats;
-  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+  const usedSeats = ticket.Flight.Tickets.map((ticket) => ticket.seat);
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.updateTicket.useMutation({
@@ -248,7 +242,7 @@ export default function EditTicketDialogButton({
                               ) : (
                             generateAllPossibleSeats({
                                       planeSeats: getSeatClassSeatCount(
-                                        plane,
+                                        ticket.Flight.Plane,
                                         watchTicketSeatClass
                                       ),
                                       seatClass: watchTicketSeatClass,
