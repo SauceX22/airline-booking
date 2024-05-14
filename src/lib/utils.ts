@@ -1,3 +1,4 @@
+import type { Plane, SeatClass } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -17,8 +18,10 @@ const PLANE_ROWS = ["A", "B", "C", "D", "E", "F"];
 
 export function generateAllPossibleSeats({
   planeSeats,
+  seatClass,
 }: {
   planeSeats: number;
+  seatClass: SeatClass;
 }) {
   const totalRows = PLANE_ROWS.length;
   const totalColumns = Math.ceil(planeSeats / totalRows); // Calculate total columns based on the number of seats
@@ -27,12 +30,27 @@ export function generateAllPossibleSeats({
 
   for (let i = 0; i < totalRows; i++) {
     for (let j = 1; j <= totalColumns; j++) {
-      const seatName = `${PLANE_ROWS[i]}${j}`;
+      let seatName = `${PLANE_ROWS[i]}${j}`;
+      if (seatClass === "FIRSTCLASS") {
+        seatName = `F${seatName}`;
+      } else if (seatClass === "BUSINESS") {
+        seatName = `B${seatName}`;
+      }
       allSeats.push(seatName);
     }
   }
 
   return allSeats.slice(0, planeSeats); // Return only the required number of seats if totalSeats is less than totalRows * totalColumns
+}
+
+export function getSeatClassSeatCount(plane: Plane, seatClass: SeatClass) {
+  if (seatClass === "BUSINESS") {
+    return plane.nBusinessSeats;
+  } else if (seatClass === "FIRSTCLASS") {
+    return plane.nFirstClassSeats;
+  } else {
+    return plane.nEconomySeats;
+  }
 }
 
 export function generateRandomSeat({
