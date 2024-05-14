@@ -53,7 +53,9 @@ export default function TicketCancelDialogButton({
   return (
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="w-full">
+        <Button variant="destructive" className="w-full"
+          disabled={ticket.status === "CANCELLED"}
+        >
           <XIcon className="mr-2 h-4 w-4" />
           Cancel Ticket
         </Button>
