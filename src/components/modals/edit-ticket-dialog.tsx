@@ -46,7 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { revalidatePathCache } from "@/lib/actions";
+import { revalidatePathCache } from "@/lib/actions/search";
 import { cn, generateAllPossibleSeats, getSeatClassSeatCount } from "@/lib/utils";
 import { updateTicketSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";

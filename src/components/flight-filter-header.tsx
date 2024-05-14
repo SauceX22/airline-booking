@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { searchAction } from "@/lib/actions";
+import { searchAction } from "@/lib/actions/search";
 import { cn } from "@/lib/utils";
 import { flightFilterFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";

@@ -58,7 +58,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { revalidatePathCache } from "@/lib/actions";
+import { revalidatePathCache } from "@/lib/actions/search";
 import {
   cn,
   generateAllPossibleSeats,
