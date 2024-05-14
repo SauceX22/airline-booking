@@ -85,7 +85,7 @@ export function BookTicketSection({
     flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
-  const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
+  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
 
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
