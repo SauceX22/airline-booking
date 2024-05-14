@@ -59,7 +59,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { revalidatePathCache } from "@/lib/actions";
-import { cn, generateAllPossibleSeats, generateRandomSeat } from "@/lib/utils";
+import {
+  cn,
+  generateAllPossibleSeats,
+  generateRandomSeat,
+  getSeatClassSeatCount,
+} from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
 import { api } from "@/trpc/client";
 
@@ -82,20 +87,18 @@ export function BookTicketSection({
     flight.Plane.nBusinessSeats;
   const usedSeats = existingUserTickets.map((ticket) => ticket.seat);
 
-  const generatedPlaneSeats = useMemo(
-    () => generateAllPossibleSeats({ planeSeats: totalPlaneSeats }),
-    [totalPlaneSeats]
-  );
-
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       passengers: [
         {
           name: session?.user.name ?? "Passenger 1",
           email: session?.user.email ?? "passenger.1@example.com",
-          seat: generateRandomSeat({ planeSeats: totalPlaneSeats, usedSeats }),
+          seat: generateRandomSeat({
+            planeSeats: flight.Plane.nEconomySeats,
+            usedSeats,
+          }),
           seatClass: "ECONOMY",
         },
       ],
@@ -104,6 +107,7 @@ export function BookTicketSection({
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = newBookingForm;
 
@@ -147,6 +151,8 @@ export function BookTicketSection({
         router.refresh();
       },
     });
+
+  const watchPassengers = watch("passengers");
 
   async function onSubmit(data: FormData) {
     // if any passenger has the same email as an existing passenger, throw an error
@@ -200,163 +206,184 @@ export function BookTicketSection({
           </div>
           <Separator className="my-4" />
           <ScrollArea>
-            {passengerFields.fields.map((field, index) => (
-              <section key={field.id} className="p-1">
-                <div className="flex flex-col items-start justify-start gap-2">
-                  <div className="flex w-full items-start justify-stretch gap-2">
-                    <FormField
-                      {...register(`passengers.${index}.name`)}
-                      control={newBookingForm.control}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel htmlFor="name">Name</FormLabel>
-                          <FormControl id="name">
-                            <Input
-                              type="text"
-                              id="name"
-                              autoCapitalize="words"
-                              autoComplete="name"
-                              autoCorrect="off"
-                              placeholder="Enter passenger name"
-                              disabled={isLoading}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage>
-                            {errors.passengers?.[index]?.name?.message}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      {...register(`passengers.${index}.email`)}
-                      control={newBookingForm.control}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel htmlFor="email">Email</FormLabel>
-                          <FormControl id="email">
-                            <Input
-                              type="email"
-                              id="email"
-                              autoCapitalize="words"
-                              autoComplete="email"
-                              autoCorrect="off"
-                              placeholder="Enter your email"
-                              disabled={isLoading}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage>
-                            {errors.passengers?.[index]?.email?.message}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      {...register(`passengers.${index}.seatClass`)}
-                      control={newBookingForm.control}
-                      defaultValue="ECONOMY"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel htmlFor="seat-class">Seat Class</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select seat class" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Seat Classes</SelectLabel>
-                                <SelectItem value="ECONOMY">
-                                  Economy Class
-                                </SelectItem>
-                                <SelectItem value="BUSINESS">
-                                  Business Class
-                                </SelectItem>
-                                <SelectItem value="FIRSTCLASS">
-                                  First Class
-                                </SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      className="h-[4.5rem] shrink-0 grow-0"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        passengerFields.remove(index);
-                      }}>
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Collapsible className="w-full space-y-2">
-                    <CollapsibleTrigger
-                      className={cn(
-                        buttonVariants({ variant: "outline" }),
-                        "group flex w-full items-center justify-between active:scale-100"
-                      )}>
-                      <span className="font-medium">Seat Selection</span>
-                      <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className=" w-full gap-2 rounded-lg bg-accent p-2">
+            {passengerFields.fields.map((field, index) => {
+              const watchPassengerSeatClass = watch(
+                `passengers.${index}.seatClass`
+              );
+              return (
+                <section key={field.id} className="p-1">
+                  <div className="flex flex-col items-start justify-start gap-2">
+                    <div className="flex w-full items-start justify-stretch gap-2">
                       <FormField
-                        {...register(`passengers.${index}.seat`)}
+                        {...register(`passengers.${index}.name`)}
                         control={newBookingForm.control}
                         render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <ScrollArea className=" flex w-fit flex-row items-stretch justify-stretch ">
-                                <RadioGroup
-                                  className="flex max-h-64 w-full flex-wrap items-start justify-evenly gap-2"
-                                  onValueChange={field.onChange}
-                                  value={field.value}>
-                                  {generatedPlaneSeats.map((seat, index) => (
-                                    <FormControl key={index}>
-                                      <RadioGroupPrimitive.Item
-                                        className={cn(
-                                          buttonVariants({
-                                            variant: "outline",
-                                            size: "icon",
-                                          }),
-                                          "relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-xs",
-                                          "hover:bg-background/60",
-                                          "group [&[data-state=checked]]:bg-destructive/90"
-                                        )}
-                                        disabled={
-                                          usedSeats.includes(seat) ||
-                                          newBookingForm
-                                            .getValues("passengers")
-                                            .map((passenger) => passenger.seat)
-                                            .includes(seat)
-                                        }
-                                        id={seat}
-                                        value={seat}>
-                                        <span>{seat}</span>
-                                      </RadioGroupPrimitive.Item>
-                                    </FormControl>
-                                  ))}
-                                </RadioGroup>
-                                <ScrollBar orientation="horizontal" />
-                              </ScrollArea>
+                          <FormItem className="w-full">
+                            <FormLabel htmlFor="name">Name</FormLabel>
+                            <FormControl id="name">
+                              <Input
+                                type="text"
+                                id="name"
+                                autoCapitalize="words"
+                                autoComplete="name"
+                                autoCorrect="off"
+                                placeholder="Enter passenger name"
+                                disabled={isLoading}
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage>
-                              {errors.passengers?.[0]?.seat?.message}
+                              {errors.passengers?.[index]?.name?.message}
                             </FormMessage>
                           </FormItem>
                         )}
                       />
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              </section>
-            ))}
+                      <FormField
+                        {...register(`passengers.${index}.email`)}
+                        control={newBookingForm.control}
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormControl id="email">
+                              <Input
+                                type="email"
+                                id="email"
+                                autoCapitalize="words"
+                                autoComplete="email"
+                                autoCorrect="off"
+                                placeholder="Enter your email"
+                                disabled={isLoading}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage>
+                              {errors.passengers?.[index]?.email?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        {...register(`passengers.${index}.seatClass`)}
+                        control={newBookingForm.control}
+                        defaultValue="ECONOMY"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel htmlFor="seat-class">
+                              Seat Class
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select seat class" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Seat Classes</SelectLabel>
+                                  <SelectItem value="ECONOMY">
+                                    Economy Class
+                                  </SelectItem>
+                                  <SelectItem value="BUSINESS">
+                                    Business Class
+                                  </SelectItem>
+                                  <SelectItem value="FIRSTCLASS">
+                                    First Class
+                                  </SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="h-[4.5rem] shrink-0 grow-0"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          passengerFields.remove(index);
+                        }}>
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Collapsible className="w-full space-y-2">
+                      <CollapsibleTrigger
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "group flex w-full items-center justify-between active:scale-100"
+                        )}>
+                        <span className="font-medium">Seat Selection</span>
+                        <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 group-[&[data-state=open]]:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent
+                        className={cn(
+                          "w-full gap-2 rounded-lg p-2",
+                          watchPassengerSeatClass === "FIRSTCLASS"
+                            ? "bg-yellow-500/60"
+                            : watchPassengerSeatClass === "BUSINESS"
+                              ? "bg-blue-500/60"
+                              : "bg-accent"
+                        )}>
+                        <FormField
+                          {...register(`passengers.${index}.seat`)}
+                          control={newBookingForm.control}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <ScrollArea className=" flex w-fit flex-row items-stretch justify-stretch ">
+                                  <RadioGroup
+                                    className="flex max-h-64 w-full flex-wrap items-start justify-evenly gap-2"
+                                    onValueChange={field.onChange}
+                                    value={field.value}>
+                                    {generateAllPossibleSeats({
+                                      planeSeats: getSeatClassSeatCount(
+                                        flight.Plane,
+                                        watchPassengerSeatClass
+                                      ),
+                                      seatClass: watchPassengerSeatClass,
+                                    }).map((seat, index) => (
+                                      <FormControl key={index}>
+                                        <RadioGroupPrimitive.Item
+                                          className={cn(
+                                            buttonVariants({
+                                              variant: "outline",
+                                              size: "icon",
+                                            }),
+                                            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-xs",
+                                            "group relative hover:bg-background/60 [&[data-state=checked]]:bg-destructive/90"
+                                          )}
+                                          disabled={
+                                            usedSeats.includes(seat) ||
+                                            watchPassengers
+                                              .map(
+                                                (passenger) => passenger.seat
+                                              )
+                                              .includes(seat)
+                                          }
+                                          id={seat}
+                                          value={seat}>
+                                          <span>{seat}</span>
+                                        </RadioGroupPrimitive.Item>
+                                      </FormControl>
+                                    ))}
+                                  </RadioGroup>
+                                  <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
+                              </FormControl>
+                              <FormMessage>
+                                {errors.passengers?.[0]?.seat?.message}
+                              </FormMessage>
+                            </FormItem>
+                          )}
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
+                </section>
+              );
+            })}
           </ScrollArea>
         </form>
       </Form>
@@ -430,8 +457,8 @@ export function BookTicketSection({
                 </>
               )}
               <Separator className="mx-auto my-4 w-[80%] rounded-lg bg-muted-foreground" />
-              {newBookingForm.getValues("passengers").length > 0 ? (
-                newBookingForm.getValues("passengers").map((field, index) => (
+              {watchPassengers.length > 0 ? (
+                watchPassengers.map((field, index) => (
                   <div
                     className="flex items-center justify-between"
                     key={index}>
@@ -461,8 +488,8 @@ export function BookTicketSection({
                 Base Fare
               </span>
               <span className="flex flex-col items-end justify-start">
-                {newBookingForm.getValues("passengers").length > 0 ? (
-                  newBookingForm.getValues("passengers").map((field, index) => (
+                {watchPassengers.length > 0 ? (
+                  watchPassengers.map((field, index) => (
                     <span
                       key={index}
                       className="flex items-center justify-end font-semibold capitalize text-muted-foreground">
@@ -483,9 +510,8 @@ export function BookTicketSection({
               </span>
               <span className="flex items-center justify-end text-2xl font-bold">
                 $
-                {newBookingForm.getValues("passengers").length > 0
-                  ? newBookingForm
-                      .getValues("passengers")
+                {watchPassengers.length > 0
+                  ? watchPassengers
                       .map(
                         (field, index) =>
                           SeatClassPriceRestriction[field.seatClass]

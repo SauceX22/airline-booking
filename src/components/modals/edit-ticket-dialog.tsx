@@ -232,6 +232,7 @@ export default function EditTicketDialogButton({
                             value={field.value}>
                             {generateAllPossibleSeats({
                               planeSeats: totalPlaneSeats,
+                              seatClass: ticket.class,
                             }).map((seat, index) => (
                               <FormControl key={index}>
                                 <RadioGroupPrimitive.Item
