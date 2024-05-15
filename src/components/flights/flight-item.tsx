@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Link from "next/link";
 import { type Flight, type Plane, type Ticket } from "@prisma/client";
 import { format } from "date-fns";
@@ -34,12 +35,16 @@ interface FlightItemProps {
 export async function FlightItem({ flight }: FlightItemProps) {
   const session = await auth();
 
-  const seatsLeft =
+  const totalPlaneSeats =
+    flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats +
-    flight.Plane.nFirstClassSeats -
-    // TODO make only the payed tickets count (i think)
-    flight.Tickets.length;
+    flight.Plane.nBusinessSeats;
+  const usedSeats = useMemo(
+    () => flight.Tickets.map((ticket) => ticket.seat),
+    [flight.Tickets]
+  );
+  const availableFreeSeats = totalPlaneSeats - usedSeats.length;
+  const isWaitlistOnly = availableFreeSeats === 0;
 
   return (
     <Card className="flex min-h-80 w-full max-w-md flex-col items-stretch justify-start">
@@ -57,7 +62,7 @@ export async function FlightItem({ flight }: FlightItemProps) {
           variant="secondary"
           className="pointer-events-none w-fit select-none gap-2 text-base font-medium text-muted-foreground">
           <TicketIcon className="h-4 w-4" />
-          {seatsLeft} seats left
+          {availableFreeSeats} seats left
         </Badge>
       </CardHeader>
       <Separator className="my-4" />
@@ -114,8 +119,13 @@ export async function FlightItem({ flight }: FlightItemProps) {
       <CardFooter className="mt-auto">
         <Link
           href={`/flights/${flight.id}`}
-          className={cn(buttonVariants(), "w-full")}>
-          Book now
+          className={cn(
+            buttonVariants({
+              variant: isWaitlistOnly ? "outline" : "default",
+            }),
+            "w-full"
+          )}>
+          {isWaitlistOnly ? "Book Waitlist Tickets" : "Book Ticket"}
         </Link>
       </CardFooter>
     </Card>

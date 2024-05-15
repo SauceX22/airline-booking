@@ -86,8 +86,12 @@ export function BookTicketSection({
     flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
-  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
+  const usedSeats = useMemo(
+    () => flight.Tickets.map((ticket) => ticket.seat),
+    [flight.Tickets]
+  );
   const availableFreeSeats = totalPlaneSeats - usedSeats.length;
+  const isWaitlistOnly = availableFreeSeats === 0;
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({
@@ -174,7 +178,6 @@ export function BookTicketSection({
   const apiUtils = api.useUtils();
 
   const watchPassengers = watch("passengers");
-  const isWaitlistOnly = availableFreeSeats === 0;
 
   async function onSubmit(data: FormData) {
     // if any passenger has the same email as an existing passenger, throw an error
