@@ -80,15 +80,35 @@ export function BookTicketSection({
   existingUserTickets,
 }: BookTicketSectionProps) {
   const { data: session } = useSession();
+  const isAdmin = session?.user.role === "ADMIN";
 
   const totalPlaneSeats =
     flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
   const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
+  const availableFreeSeats = totalPlaneSeats - usedSeats.length;
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({
+      onError(err) {
+        toast.error("Something went wrong.", {
+          description: err.message,
+        });
+      },
+      async onSuccess(data, variables, context) {
+        toast.success("Tickets booked successfully!", {
+          description: "The tickets have been successfully booked.",
+        });
+
+        await apiUtils.ticket.invalidate();
+        await revalidatePathCache(path);
+        router.push("/tickets");
+        router.refresh();
+      },
+    });
+  const { mutateAsync: bookWaitlistTickets, isLoading: isWaitlistLoading } =
+    api.ticket.createWaitlistTickets.useMutation({
       onError(err) {
         toast.error("Something went wrong.", {
           description: err.message,
@@ -136,7 +156,7 @@ export function BookTicketSection({
     name: "passengers",
     rules: {
       minLength: 1,
-      maxLength: 10 - existingUserTickets.length,
+      maxLength: isAdmin ? availableFreeSeats : 10 - existingUserTickets.length,
       validate: (value) => {
         if (value.length < 1) {
           return "You must have at least one passenger";
@@ -154,6 +174,7 @@ export function BookTicketSection({
   const apiUtils = api.useUtils();
 
   const watchPassengers = watch("passengers");
+  const isWaitlistOnly = availableFreeSeats === 0;
 
   async function onSubmit(data: FormData) {
     // if any passenger has the same email as an existing passenger, throw an error
@@ -167,6 +188,12 @@ export function BookTicketSection({
           .filter((email) => newEmails.includes(email))
           .map((email) => `${email} has a ticket.`)
           .join("\n"),
+      });
+    }
+    if (isWaitlistOnly) {
+      return await bookWaitlistTickets({
+        flightId: flight.id,
+        passengers: data.passengers,
       });
     }
     await bookTickets({
@@ -547,12 +574,13 @@ export function BookTicketSection({
           <Button
             className="w-full border-background"
             size="lg"
+            variant={isWaitlistOnly ? "outline" : "default"}
             disabled={isLoading}
             onClick={async (e) => {
               e.preventDefault();
               await newBookingForm.handleSubmit((data) => onSubmit(data))();
             }}>
-            Book Ticket
+            {isWaitlistOnly ? "Book Waitlist Tickets" : "Book Ticket"}
           </Button>
         </div>
       </div>

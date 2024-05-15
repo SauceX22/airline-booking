@@ -30,3 +30,5 @@ export enum SeatClassPriceRestriction {
   "BUSINESS" = BUSINESS_PRICE,
   "FIRSTCLASS" = FIRSTCLASS_PRICE,
 }
+
+export const MAX_WAITLIST_TICKETS = 10;
