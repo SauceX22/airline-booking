@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  Flight,
-  PaymentTransaction,
-  Plane,
-  SeatClass,
-  Ticket,
-} from "@prisma/client";
+import type { Flight, PaymentTransaction, Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { format } from "date-fns";
 import {
@@ -46,7 +40,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -247,7 +241,10 @@ export function BookTicketSection({
                   <div className="flex flex-col items-start justify-start gap-2">
                     <div className="flex w-full items-start justify-stretch gap-2">
                       <FormField
-                        {...register(`passengers.${index}.name`)}
+                        {...{
+                          ...register(`passengers.${index}.name`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.name`}
                         disabled={isLoading}
@@ -272,7 +269,10 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.email`)}
+                        {...{
+                          ...register(`passengers.${index}.email`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.email`}
                         disabled={isLoading}
@@ -297,7 +297,10 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.seatClass`)}
+                        {...{
+                          ...register(`passengers.${index}.seatClass`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.seatClass`}
                         defaultValue="ECONOMY"
@@ -364,7 +367,10 @@ export function BookTicketSection({
                               : "bg-accent"
                         )}>
                         <FormField
-                          {...register(`passengers.${index}.seat`)}
+                          {...{
+                            ...register(`passengers.${index}.seat`),
+                            ref: null,
+                          }}
                           control={newBookingForm.control}
                           disabled={isLoading}
                           render={({ field }) => (
