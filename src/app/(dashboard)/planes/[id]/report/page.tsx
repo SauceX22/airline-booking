@@ -256,7 +256,7 @@ export default async function PlaneReportPage({
               </Table>
             </CardContent>
           </Card>
-          <Card className="bg-destructive">
+          <Card>
             <CardHeader>
               <CardTitle>Cancelled Tickets</CardTitle>
             </CardHeader>
@@ -272,15 +272,15 @@ export default async function PlaneReportPage({
                     <TableHead>Reason</TableHead>
                   </TableRow>
                 </TableHeader>
-                  <TableBody>
-                    {plane.Statistics.cancelledTickets.map((ticket) => (
-                      <TableRow key={ticket.id}>
-                        <TableCell>{ticket.passengerName}</TableCell>
-                        <TableCell>{ticket.Flight.name}</TableCell>
-                        <TableCell>Cancelled</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
+                <TableBody>
+                  {plane.Statistics.cancelledTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell>{ticket.passengerName}</TableCell>
+                      <TableCell>{ticket.Flight.name}</TableCell>
+                      <TableCell>Cancelled</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
             </CardContent>
           </Card>
