@@ -68,6 +68,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       };
     },
   },
+  events: {
+    async linkAccount({ user, profile, account }) {
+      if (!user.email) throw new Error("User email not found");
+      await db.user.update({
+        where: { email: user.email },
+        data: {
+          name: profile.name,
+          image: profile.image,
+          role: "USER",
+        },
+      });
+    },
+  },
   session: {
     strategy: "jwt",
   },
@@ -132,6 +145,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
           prompt: "consent",
