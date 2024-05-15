@@ -1,15 +1,11 @@
-import { useMemo } from "react";
 import Link from "next/link";
 import { type Flight, type Plane, type Ticket } from "@prisma/client";
 import { format } from "date-fns";
 import {
-  ArrowRightIcon,
   CircleArrowDown,
   CircleArrowRight,
-  MapPin,
   PlaneIcon,
   PlaneTakeoffIcon,
-  Star,
   TicketIcon,
 } from "lucide-react";
 
@@ -18,31 +14,23 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { auth } from "@/server/auth";
 
 interface FlightItemProps {
   flight: Flight & { Plane: Plane; Tickets: Ticket[] };
 }
 
 export async function FlightItem({ flight }: FlightItemProps) {
-  const session = await auth();
-
   const totalPlaneSeats =
     flight.Plane.nFirstClassSeats +
     flight.Plane.nEconomySeats +
     flight.Plane.nBusinessSeats;
-  const usedSeats = useMemo(
-    () => flight.Tickets.map((ticket) => ticket.seat),
-    [flight.Tickets]
-  );
+  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
   const availableFreeSeats = totalPlaneSeats - usedSeats.length;
   const isWaitlistOnly = availableFreeSeats === 0;
 
