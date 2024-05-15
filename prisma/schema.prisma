@@ -132,7 +132,7 @@ model Flight {
 enum Status {
     CONFIRMED
     PENDING
-    WAITLIST
+    WAITLISTED
     CANCELLED
 }
 
