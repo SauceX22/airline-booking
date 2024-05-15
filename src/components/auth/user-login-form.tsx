@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AuthError } from "next-auth";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -20,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { MotionButton } from "@/components/ui/motion-button";
 import { userAuthLoginSchema } from "@/lib/validations/auth";
 
@@ -37,11 +37,31 @@ export const UserAuthLoginForm = ({
 
   async function submitWithGoogle() {
     setIsGoogleLoading(true);
-    const { signIn } = await import("next-auth/react");
-
-    await signIn("google", {
-      callbackUrl: searchParams?.get("from") ?? "/auth/login",
-    });
+    try {
+      await signIn("google", {
+        callbackUrl: searchParams?.get("from") ?? "/auth/login",
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        if (error.type === "OAuthSignInError") {
+          return toast.error("Something went wrong.", {
+            description: "Your sign in request failed. Please try again.",
+            action: {
+              label: "Retry",
+              onClick: () => void submitWithGoogle(),
+            },
+          });
+        }
+        return toast.error("Something went wrong.", {
+          description: "Your sign in request failed. Please try again.",
+          action: {
+            label: "Retry",
+            onClick: () => void submitWithGoogle(),
+          },
+        });
+      }
+      setIsGoogleLoading(false);
+    }
   }
 
   const loginForm = useForm<FormData>({
@@ -55,39 +75,36 @@ export const UserAuthLoginForm = ({
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
 
-  async function onSubmit(data: FormData) {
+  async function authenticateUser(formdata: FormData) {
     setIsLoading(true);
+    try {
+      await signIn("credentials", formdata);
 
-    const signInResult = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+      toast.success("Welcome back!", {
+        description: "You have been successfully signed in.",
+      });
 
-    setIsLoading(false);
-
-    if (!signInResult?.ok) {
-      if (signInResult?.error === "BannedError") {
-        return toast.error("Your account has been disabled.", {
-          description: "Please contact support to reinstate your account.",
+      setIsLoading(false);
+      // Redirect to the page the user came from
+      return router.push("/home");
+    } catch (error) {
+      if (error instanceof AuthError) {
+        if (error.type === "CredentialsSignin") {
+          return toast.error("Invalid email or password.", {
+            description: "Please check your credentials and try again.",
+          });
+        }
+        return toast.error("Something went wrong.", {
+          description: "Your sign in request failed. Please try again.",
+          action: {
+            label: "Retry",
+            onClick: () => void authenticateUser(formdata),
+          },
         });
       }
 
-      return toast.error("Something went wrong.", {
-        description: "Your sign in request failed. Please try again.",
-        action: {
-          label: "Retry",
-          onClick: () => void onSubmit(data),
-        },
-      });
+      setIsLoading(false);
     }
-
-    toast.success("Welcome back!", {
-      description: "You have been successfully signed in.",
-    });
-
-    // Redirect to the page the user came from
-    return router.push("/home");
   }
 
   return (
@@ -101,7 +118,7 @@ export const UserAuthLoginForm = ({
         </div>
         <div className="grid gap-4">
           <Form {...loginForm}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(authenticateUser)}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <FormField
