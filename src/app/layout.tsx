@@ -23,7 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body
+        className={`vsc-initialized font-sans ${inter.className} ${inter.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

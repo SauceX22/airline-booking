@@ -180,7 +180,7 @@ export function BookTicketSection({
       <Form {...newBookingForm}>
         <form className="col-span-1 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Passengers</h2>
+            <div className="text-2xl font-semibold">Passengers</div>
             <Button
               disabled={isLoading}
               onClick={(e) => {
@@ -213,12 +213,13 @@ export function BookTicketSection({
                 `passengers.${index}.seatClass`
               );
               return (
-                <section key={field.id} className="p-1">
+                <div key={field.id} className="p-1">
                   <div className="flex flex-col items-start justify-start gap-2">
                     <div className="flex w-full items-start justify-stretch gap-2">
                       <FormField
                         {...register(`passengers.${index}.name`)}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.name`}
                         disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
@@ -243,6 +244,7 @@ export function BookTicketSection({
                       <FormField
                         {...register(`passengers.${index}.email`)}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.email`}
                         disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
@@ -267,6 +269,7 @@ export function BookTicketSection({
                       <FormField
                         {...register(`passengers.${index}.seatClass`)}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.seatClass`}
                         defaultValue="ECONOMY"
                         disabled={isLoading}
                         render={({ field }) => (
@@ -379,7 +382,7 @@ export function BookTicketSection({
                                 </ScrollArea>
                               </FormControl>
                               <FormMessage>
-                                {errors.passengers?.[0]?.seat?.message}
+                                {errors.passengers?.[index]?.seat?.message}
                               </FormMessage>
                             </FormItem>
                           )}
@@ -387,7 +390,7 @@ export function BookTicketSection({
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
-                </section>
+                </div>
               );
             })}
           </ScrollArea>
@@ -395,7 +398,7 @@ export function BookTicketSection({
       </Form>
       <div className="col-span-1 h-fit space-y-6 rounded-lg bg-accent p-6">
         <div>
-          <h2 className="mb-4 text-2xl font-bold">Flight Details</h2>
+          <div className="mb-4 text-2xl font-bold">Flight Details</div>
           <div className="mt-2 space-y-2">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 font-medium text-muted-foreground">
@@ -473,7 +476,15 @@ export function BookTicketSection({
                       {field.name}
                     </span>
                     <span className="text-lg font-semibold capitalize text-muted-foreground">
-                      {field.seatClass.replace("CLASS", " Class").toLowerCase()}
+                      {field.seatClass
+                        ?.toString()
+                        .replace("CLASS", "Class")
+                        .toLowerCase()
+                        ? field.seatClass
+                            .toString()
+                            .replace("CLASS", "Class")
+                            .toLowerCase()
+                        : field.seatClass}
                     </span>
                   </div>
                 ))
@@ -486,7 +497,7 @@ export function BookTicketSection({
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold">Total Cost</h2>
+          <div className="text-xl font-bold">Total Cost</div>
           <div className="mt-2 space-y-2">
             <div className="flex items-start justify-between">
               <span className="flex items-center justify-start gap-2 font-medium text-muted-foreground">
