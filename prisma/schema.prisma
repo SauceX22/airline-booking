@@ -168,6 +168,7 @@ model Ticket {
     bookedById String
 
     @@unique([id, bookedById])
+    @@unique([passengerEmail, flightId, class])
     @@index([bookedById])
     @@index([flightId])
 }
