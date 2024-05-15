@@ -132,6 +132,7 @@ model Flight {
 enum Status {
     CONFIRMED
     PENDING
+    WAITLIST
     CANCELLED
 }
 
@@ -153,9 +154,12 @@ model Ticket {
     passengerName  String
     passengerEmail String
 
-    status  Status              @default(PENDING)
+    status Status @default(PENDING)
+
+    waitlistOrder Int @default(0)
+
     Payment PaymentTransaction?
-    price   Int
+    price   Int                 @default(0)
 
     Flight   Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
     flightId String
