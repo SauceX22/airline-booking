@@ -1,9 +1,11 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
+import { getFine } from "@/lib/utils";
 import {
   newBookingFormSchema,
   updateTicketSchema,
@@ -13,7 +15,6 @@ import {
   protectedAdminProcedure,
   protectedProcedure,
 } from "@/server/api/trpc";
-import { getFine } from "@/lib/utils";
 
 export const ticketRouter = createTRPCRouter({
   createTickets: protectedProcedure
@@ -168,21 +169,96 @@ export const ticketRouter = createTRPCRouter({
         where: { id: input.ticketId },
         include: {
           BookedBy: true,
-        },
-      });
-      const cancellationFine = getFine({ticketPrice: ticket.price, cause: "CANCELLED"});
-
-      return await ctx.db.ticket.update({
-        where: { id: input.ticketId },
-        data: {
-          status: "CANCELLED",
-          BookedBy: {
-            update: {
-              fine: ticket.BookedBy.fine + cancellationFine,
+          Payment: {
+            include: {
+              Card: {
+                include: {
+                  CardOwner: true,
+                },
+              },
             },
           },
         },
       });
+      if (ticket.status === "CANCELLED") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Ticket is already cancelled",
+        });
+      }
+
+      const cancellationFine = getFine({
+        ticketPrice: ticket.price,
+        cause: "CANCELLED",
+      });
+
+      // waitlisted tickets are not fined for cancellation
+      if (ticket.status !== "WAITLISTED") {
+        if (ticket.BookedBy.role === "USER") {
+          // if a normal user booked the ticket, fine them
+          await ctx.db.user.update({
+            where: { id: ticket.BookedBy.id },
+            data: {
+              fine: {
+                increment: cancellationFine,
+              },
+            },
+          });
+        } else if (
+          ticket.BookedBy.role === "ADMIN" &&
+          ticket.status === "CONFIRMED" &&
+          ticket.Payment?.Card.CardOwner
+        ) {
+          // if an admin booked the ticket, but someone payed for it, fine them
+          await ctx.db.user.update({
+            where: { id: ticket.Payment.Card.CardOwner.id },
+            data: {
+              fine: {
+                increment: cancellationFine,
+              },
+            },
+          });
+        } else if (
+          ticket.BookedBy.role === "ADMIN" &&
+          ticket.status === "PENDING"
+        ) {
+          // if an admin booked the ticket for someone that may not be in teh system, fine them
+          await ctx.db.user.upsert({
+            where: { email: ticket.passengerEmail },
+            update: {
+              fine: {
+                increment: cancellationFine,
+              },
+            },
+            create: {
+              email: ticket.passengerEmail,
+              fine: cancellationFine,
+            },
+          });
+        } else {
+          // otherwise, just fine the admin for tracking purposes
+          await ctx.db.user.update({
+            where: { id: ticket.BookedBy.id },
+            data: {
+              fine: {
+                increment: cancellationFine,
+              },
+            },
+          });
+        }
+      }
+
+      const updatedTicket = await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          status: "CANCELLED",
+        },
+        include: {
+          BookedBy: true,
+        },
+      });
+
+      return updatedTicket;
     }),
   deleteTicket: protectedProcedure
     .input(

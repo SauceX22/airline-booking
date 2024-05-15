@@ -87,6 +87,25 @@ export function BookTicketSection({
     flight.Plane.nBusinessSeats;
   const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
 
+  const { mutateAsync: bookTickets, isLoading } =
+    api.ticket.createTickets.useMutation({
+      onError(err) {
+        toast.error("Something went wrong.", {
+          description: err.message,
+        });
+      },
+      async onSuccess(data, variables, context) {
+        toast.success("Tickets booked successfully!", {
+          description: "The tickets have been successfully booked.",
+        });
+
+        await apiUtils.ticket.invalidate();
+        await revalidatePathCache(path);
+        router.push("/tickets");
+        router.refresh();
+      },
+    });
+
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
     mode: "onBlur",
@@ -103,6 +122,7 @@ export function BookTicketSection({
         },
       ],
     },
+    disabled: isLoading,
   });
   const {
     handleSubmit,
@@ -133,25 +153,6 @@ export function BookTicketSection({
   const router = useRouter();
   const apiUtils = api.useUtils();
 
-  const { mutateAsync: bookTickets, isLoading } =
-    api.ticket.createTickets.useMutation({
-      onError(err) {
-        toast.error("Something went wrong.", {
-          description: err.message,
-        });
-      },
-      async onSuccess(data, variables, context) {
-        toast.success("Tickets booked successfully!", {
-          description: "The tickets have been successfully booked.",
-        });
-
-        await apiUtils.ticket.invalidate();
-        await revalidatePathCache(path);
-        router.push("/tickets");
-        router.refresh();
-      },
-    });
-
   const watchPassengers = watch("passengers");
 
   async function onSubmit(data: FormData) {
@@ -181,6 +182,7 @@ export function BookTicketSection({
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Passengers</h2>
             <Button
+              disabled={isLoading}
               onClick={(e) => {
                 e.preventDefault();
                 if (
@@ -217,6 +219,7 @@ export function BookTicketSection({
                       <FormField
                         {...register(`passengers.${index}.name`)}
                         control={newBookingForm.control}
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="name">Name</FormLabel>
@@ -228,7 +231,6 @@ export function BookTicketSection({
                                 autoComplete="name"
                                 autoCorrect="off"
                                 placeholder="Enter passenger name"
-                                disabled={isLoading}
                                 {...field}
                               />
                             </FormControl>
@@ -241,6 +243,7 @@ export function BookTicketSection({
                       <FormField
                         {...register(`passengers.${index}.email`)}
                         control={newBookingForm.control}
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="email">Email</FormLabel>
@@ -252,7 +255,6 @@ export function BookTicketSection({
                                 autoComplete="email"
                                 autoCorrect="off"
                                 placeholder="Enter your email"
-                                disabled={isLoading}
                                 {...field}
                               />
                             </FormControl>
@@ -266,6 +268,7 @@ export function BookTicketSection({
                         {...register(`passengers.${index}.seatClass`)}
                         control={newBookingForm.control}
                         defaultValue="ECONOMY"
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="seat-class">
@@ -301,6 +304,7 @@ export function BookTicketSection({
                         size="icon"
                         variant="destructive"
                         className="h-[4.5rem] shrink-0 grow-0"
+                        disabled={isLoading}
                         onClick={(e) => {
                           e.preventDefault();
                           passengerFields.remove(index);
@@ -329,6 +333,7 @@ export function BookTicketSection({
                         <FormField
                           {...register(`passengers.${index}.seat`)}
                           control={newBookingForm.control}
+                          disabled={isLoading}
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
@@ -355,6 +360,7 @@ export function BookTicketSection({
                                             "group relative hover:bg-background/60 [&[data-state=checked]]:bg-destructive/90"
                                           )}
                                           disabled={
+                                            isLoading ||
                                             usedSeats.includes(seat) ||
                                             watchPassengers
                                               .map(
@@ -530,6 +536,7 @@ export function BookTicketSection({
           <Button
             className="w-full border-background"
             size="lg"
+            disabled={isLoading}
             onClick={async (e) => {
               e.preventDefault();
               await newBookingForm.handleSubmit((data) => onSubmit(data))();
