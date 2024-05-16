@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { unstable_noStore } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -19,11 +17,12 @@ import {
 } from "@/components/ui/table";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
-import { WaitlistActions } from "@/app/(dashboard)/flights/[id]/details/waitlist-actions";
+import { getFlightStats, getInitials } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
-import { getFlightStats, getInitials } from "../../../../../lib/utils";
+import { DeleteTicketAction } from "./delete-ticket-action";
+import { WaitlistActions } from "./waitlist-actions";
 
 type FlightDetailsPageProps = {
   params: { id: string };
@@ -74,6 +73,7 @@ export default async function FlightDetailsPage({
                     <TableHead>Booking Date</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -102,6 +102,9 @@ export default async function FlightDetailsPage({
                           })()}>
                           {ticket.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <DeleteTicketAction ticket={ticket} />
                       </TableCell>
                     </TableRow>
                   ))}

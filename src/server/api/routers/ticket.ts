@@ -343,6 +343,32 @@ export const ticketRouter = createTRPCRouter({
 
       return updatedTicket;
     }),
+  deleteWaitlistTicket: protectedAdminProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // delete waitlist ticket, and promote other waitlisted tickets 1 order up
+      const ticket = await ctx.db.ticket.findUniqueOrThrow({
+        where: { id: input.ticketId },
+      });
+
+      await ctx.db.ticket.updateMany({
+        where: {
+          status: "WAITLISTED",
+          waitlistOrder: { gt: ticket.waitlistOrder },
+        },
+        data: {
+          waitlistOrder: { decrement: 1 },
+        },
+      });
+
+      return await ctx.db.ticket.delete({
+        where: { id: input.ticketId },
+      });
+    }),
   deleteTicket: protectedProcedure
     .input(
       z.object({
