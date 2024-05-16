@@ -24,6 +24,9 @@ export const creditCardRouter = createTRPCRouter({
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.creditCard.findMany({
+      where: {
+        CardOwner: { id: ctx.session.user.id },
+      },
       orderBy: {
         id: "desc",
       },

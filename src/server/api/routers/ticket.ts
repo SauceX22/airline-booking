@@ -6,6 +6,7 @@ import {
   SeatClassPriceRestriction,
   SeatClassWeightRestriction,
 } from "@/config/site";
+import { sendConfirmationEmail } from "@/lib/actions/email";
 import { getFine } from "@/lib/utils";
 import {
   newBookingFormSchema,
@@ -25,7 +26,7 @@ export const ticketRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.ticket.createMany({
+      const tickets = await ctx.db.ticket.createManyAndReturn({
         data: input.passengers.map(({ seatClass, ...passenger }) => ({
           passengerName: passenger.name,
           passengerEmail: passenger.email,
@@ -37,7 +38,18 @@ export const ticketRouter = createTRPCRouter({
           flightId: input.flightId,
           bookedById: ctx.session.user.id,
         })),
+        include: {
+          Flight: true,
+        },
       });
+
+      for (const ticket of tickets) {
+        await sendConfirmationEmail({
+          ticket,
+        });
+      }
+
+      return tickets;
     }),
   createWaitlistTickets: protectedProcedure
     .input(
