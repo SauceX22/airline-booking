@@ -107,7 +107,7 @@ async function createFlights() {
 
   // pick a random city from the list for each flight source and destination, pick a random UPCOMING date, and pick a random plane
   // do that 100 times
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 50; i++) {
     const flightName = generateFlightName(airlines);
     const source = safeRandomPick(cities);
     const destination = safeRandomPick(cities);

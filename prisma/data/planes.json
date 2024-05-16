@@ -1,5 +1,15 @@
 [
   {
+    "id": "b19587a0-f5bc-50d0-a2f9-bb020af52c92",
+    "name": "Boeing 777",
+    "nEconomySeats": 20,
+    "nBusinessSeats": 10,
+    "nFirstClassSeats": 4,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-03-16T00:00:00Z",
+    "firstFlightDate": "2008-04-10T00:00:00Z"
+  },
+  {
     "id": "49b7a1e2-86ba-5278-b85c-020dd5e2b7f8",
     "name": "Boeing 737",
     "nEconomySeats": 150,
