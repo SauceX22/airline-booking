@@ -91,6 +91,36 @@ export const ticketRouter = createTRPCRouter({
         })),
       });
     }),
+  promoteTicket: protectedProcedure
+    .input(
+      z.object({
+        ticketId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // promote ticket to confirmed, and push all other waitlisted tickets 1 order down
+      const ticket = await ctx.db.ticket.findUniqueOrThrow({
+        where: { id: input.ticketId },
+      });
+
+      await ctx.db.ticket.updateMany({
+        where: {
+          status: "WAITLISTED",
+          waitlistOrder: { gt: ticket.waitlistOrder },
+        },
+        data: {
+          waitlistOrder: { decrement: 1 },
+        },
+      });
+
+      return await ctx.db.ticket.update({
+        where: { id: input.ticketId },
+        data: {
+          status: "CONFIRMED",
+          waitlistOrder: 0,
+        },
+      });
+    }),
   updateTicket: protectedProcedure
     .input(
       updateTicketSchema.extend({
