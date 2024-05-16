@@ -78,9 +78,6 @@ export function BookTicketSection({
   const { data: session } = useSession();
   const isAdmin = session?.user.role === "ADMIN";
 
-  const { totalPlaneSeats, usedSeats, availableFreeSeats, isWaitlistOnly } =
-    useMemo(() => getFlightStats(flight), [flight]);
-
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({
       onError(err) {
@@ -118,6 +115,13 @@ export function BookTicketSection({
       },
     });
 
+  const {
+    totalPlaneSeats,
+    usedSeats: prevUsedSeats,
+    availableFreeSeats,
+    isWaitlistOnly,
+  } = useMemo(() => getFlightStats(flight), [flight]);
+
   const newBookingForm = useForm<FormData>({
     resolver: zodResolver(newBookingFormSchema),
     mode: "onBlur",
@@ -128,7 +132,7 @@ export function BookTicketSection({
           email: session?.user.email ?? "passenger.1@example.com",
           seat: generateRandomSeat({
             planeSeats: flight.Plane.nEconomySeats,
-            usedSeats,
+            usedSeats: prevUsedSeats,
           }),
           seatClass: "ECONOMY",
         },
@@ -142,6 +146,13 @@ export function BookTicketSection({
     watch,
     formState: { errors },
   } = newBookingForm;
+
+  const watchPassengers = watch("passengers");
+
+  const usedSeats = [
+    ...prevUsedSeats,
+    ...watchPassengers.map((passenger) => passenger.seat),
+  ];
 
   const passengerFields = useFieldArray({
     control: newBookingForm.control,
@@ -164,8 +175,6 @@ export function BookTicketSection({
   const path = usePathname();
   const router = useRouter();
   const apiUtils = api.useUtils();
-
-  const watchPassengers = watch("passengers");
 
   async function onSubmit(data: FormData) {
     // if any passenger has the same email as an existing passenger, throw an error
