@@ -57,6 +57,7 @@ import {
   cn,
   generateAllPossibleSeats,
   generateRandomSeat,
+  getFlightStats,
   getSeatClassSeatCount,
 } from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
@@ -76,16 +77,8 @@ export function BookTicketSection({
   const { data: session } = useSession();
   const isAdmin = session?.user.role === "ADMIN";
 
-  const totalPlaneSeats =
-    flight.Plane.nFirstClassSeats +
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats;
-  const usedSeats = useMemo(
-    () => flight.Tickets.map((ticket) => ticket.seat),
-    [flight.Tickets]
-  );
-  const availableFreeSeats = totalPlaneSeats - usedSeats.length;
-  const isWaitlistOnly = availableFreeSeats === 0;
+  const { totalPlaneSeats, usedSeats, availableFreeSeats, isWaitlistOnly } =
+    useMemo(() => getFlightStats(flight), [flight]);
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({

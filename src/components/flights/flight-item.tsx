@@ -19,20 +19,14 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { cn, getFlightStats } from "@/lib/utils";
 
 interface FlightItemProps {
   flight: Flight & { Plane: Plane; Tickets: Ticket[] };
 }
 
 export async function FlightItem({ flight }: FlightItemProps) {
-  const totalPlaneSeats =
-    flight.Plane.nFirstClassSeats +
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats;
-  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
-  const availableFreeSeats = totalPlaneSeats - usedSeats.length;
-  const isWaitlistOnly = availableFreeSeats === 0;
+  const { availableFreeSeats, isWaitlistOnly } = getFlightStats(flight);
 
   return (
     <Card className="flex min-h-80 w-full max-w-md flex-col items-stretch justify-start">
