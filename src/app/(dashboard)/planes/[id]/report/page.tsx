@@ -220,7 +220,6 @@ export default async function PlaneReportPage({
             </CardHeader>
             <CardContent className="grid gap-4">
               <Table>
-                {/* TODO: add table caption */}
                 <TableCaption>
                   A list of passengers who have booked a waitlisted seat
                 </TableCaption>
@@ -232,26 +231,13 @@ export default async function PlaneReportPage({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>Flight #123</TableCell>
-                    <TableCell>First</TableCell>
-                    <TableCell>3</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Flight #123</TableCell>
-                    <TableCell>Business</TableCell>
-                    <TableCell>7</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Flight #456</TableCell>
-                    <TableCell>First</TableCell>
-                    <TableCell>1</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Flight #456</TableCell>
-                    <TableCell>Business</TableCell>
-                    <TableCell>4</TableCell>
-                  </TableRow>
+                  {plane.Statistics.waitlistedTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell>{ticket.Flight.name}</TableCell>
+                      <TableCell>{ticket.class}</TableCell>
+                      <TableCell>{ticket.waitlistOrder}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
