@@ -131,7 +131,7 @@ const FlightFilterHeader = () => {
         <FormField
           control={filterForm.control}
           name="source"
-          render={({ field }) => (
+          render={({ field: { ref: _ref, ...field } }) => (
             <FormItem className="col-span-2 flex flex-col">
               <Select
                 {...field}
@@ -170,7 +170,7 @@ const FlightFilterHeader = () => {
         <FormField
           control={filterForm.control}
           name="dest"
-          render={({ field }) => (
+          render={({ field: { ref: _ref, ...field } }) => (
             <FormItem className="col-span-2 flex flex-col">
               <Select
                 {...field}
@@ -209,7 +209,7 @@ const FlightFilterHeader = () => {
         <FormField
           control={filterForm.control}
           name="date"
-          render={({ field }) => (
+          render={({ field: { ref: _ref, ...field } }) => (
             <FormItem className="col-span-2 flex flex-col">
               <Popover>
                 <PopoverTrigger asChild>

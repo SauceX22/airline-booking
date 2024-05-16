@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  Flight,
-  PaymentTransaction,
-  Plane,
-  SeatClass,
-  Ticket,
-} from "@prisma/client";
+import type { Flight, PaymentTransaction, Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { format } from "date-fns";
 import {
@@ -46,7 +40,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -63,6 +57,7 @@ import {
   cn,
   generateAllPossibleSeats,
   generateRandomSeat,
+  getFlightStats,
   getSeatClassSeatCount,
 } from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
@@ -80,15 +75,31 @@ export function BookTicketSection({
   existingUserTickets,
 }: BookTicketSectionProps) {
   const { data: session } = useSession();
+  const isAdmin = session?.user.role === "ADMIN";
 
-  const totalPlaneSeats =
-    flight.Plane.nFirstClassSeats +
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats;
-  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
+  const { totalPlaneSeats, usedSeats, availableFreeSeats, isWaitlistOnly } =
+    useMemo(() => getFlightStats(flight), [flight]);
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({
+      onError(err) {
+        toast.error("Something went wrong.", {
+          description: err.message,
+        });
+      },
+      async onSuccess(data, variables, context) {
+        toast.success("Tickets booked successfully!", {
+          description: "The tickets have been successfully booked.",
+        });
+
+        await apiUtils.ticket.invalidate();
+        await revalidatePathCache(path);
+        router.push("/tickets");
+        router.refresh();
+      },
+    });
+  const { mutateAsync: bookWaitlistTickets, isLoading: isWaitlistLoading } =
+    api.ticket.createWaitlistTickets.useMutation({
       onError(err) {
         toast.error("Something went wrong.", {
           description: err.message,
@@ -136,7 +147,7 @@ export function BookTicketSection({
     name: "passengers",
     rules: {
       minLength: 1,
-      maxLength: 10 - existingUserTickets.length,
+      maxLength: isAdmin ? availableFreeSeats : 10 - existingUserTickets.length,
       validate: (value) => {
         if (value.length < 1) {
           return "You must have at least one passenger";
@@ -167,6 +178,12 @@ export function BookTicketSection({
           .filter((email) => newEmails.includes(email))
           .map((email) => `${email} has a ticket.`)
           .join("\n"),
+      });
+    }
+    if (isWaitlistOnly) {
+      return await bookWaitlistTickets({
+        flightId: flight.id,
+        passengers: data.passengers,
       });
     }
     await bookTickets({
@@ -217,7 +234,10 @@ export function BookTicketSection({
                   <div className="flex flex-col items-start justify-start gap-2">
                     <div className="flex w-full items-start justify-stretch gap-2">
                       <FormField
-                        {...register(`passengers.${index}.name`)}
+                        {...{
+                          ...register(`passengers.${index}.name`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.name`}
                         disabled={isLoading}
@@ -242,7 +262,10 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.email`)}
+                        {...{
+                          ...register(`passengers.${index}.email`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.email`}
                         disabled={isLoading}
@@ -267,7 +290,10 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.seatClass`)}
+                        {...{
+                          ...register(`passengers.${index}.seatClass`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
                         name={`passengers.${index}.seatClass`}
                         defaultValue="ECONOMY"
@@ -334,7 +360,10 @@ export function BookTicketSection({
                               : "bg-accent"
                         )}>
                         <FormField
-                          {...register(`passengers.${index}.seat`)}
+                          {...{
+                            ...register(`passengers.${index}.seat`),
+                            ref: null,
+                          }}
                           control={newBookingForm.control}
                           disabled={isLoading}
                           render={({ field }) => (
@@ -547,12 +576,13 @@ export function BookTicketSection({
           <Button
             className="w-full border-background"
             size="lg"
+            variant={isWaitlistOnly ? "outline" : "default"}
             disabled={isLoading}
             onClick={async (e) => {
               e.preventDefault();
               await newBookingForm.handleSubmit((data) => onSubmit(data))();
             }}>
-            Book Ticket
+            {isWaitlistOnly ? "Book Waitlist Tickets" : "Book Ticket"}
           </Button>
         </div>
       </div>
