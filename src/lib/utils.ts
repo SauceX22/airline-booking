@@ -1,4 +1,4 @@
-import type { Plane, SeatClass } from "@prisma/client";
+import type { Flight, Plane, SeatClass, Ticket } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -81,10 +81,55 @@ export function generateRandomSeat({
 
 export type FineCause = "CANCELLED" | "MISSED";
 
-export function getFine({ ticketPrice, cause }: {ticketPrice: number; cause: FineCause }) {
+export function getFine({
+  ticketPrice,
+  cause,
+}: {
+  ticketPrice: number;
+  cause: FineCause;
+}) {
   if (cause === "CANCELLED") {
     return ticketPrice * 0.2;
-  } else  {
+  } else {
     return ticketPrice * 0.1;
   }
+}
+
+export function getFlightStats(
+  flight: Flight & { Plane: Plane; Tickets: Ticket[] }
+) {
+  const totalPlaneSeats =
+    flight.Plane.nFirstClassSeats +
+    flight.Plane.nEconomySeats +
+    flight.Plane.nBusinessSeats;
+
+  const confirmedAndPendingTickets: Ticket[] = [];
+  const cancelledTickets: Ticket[] = [];
+  const waitlistedTickets: Ticket[] = [];
+  const usedSeats: string[] = [];
+
+  for (const ticket of flight.Tickets) {
+    if (ticket.status === "CONFIRMED" || ticket.status === "PENDING") {
+      confirmedAndPendingTickets.push(ticket);
+      usedSeats.push(ticket.seat);
+    } else if (ticket.status === "CANCELLED") {
+      cancelledTickets.push(ticket);
+    } else if (ticket.status === "WAITLISTED") {
+      waitlistedTickets.push(ticket);
+    }
+  }
+
+  const availableFreeSeats =
+    totalPlaneSeats - confirmedAndPendingTickets.length;
+  const isWaitlistOnly = availableFreeSeats === 0;
+
+  return {
+    totalPlaneSeats,
+    confirmedAndPendingTickets,
+    cancelledTickets,
+    waitlistedTickets,
+    usedSeats,
+    availableFreeSeats,
+    isWaitlistOnly,
+  };
 }

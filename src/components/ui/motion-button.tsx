@@ -66,7 +66,7 @@ const MotionButton = React.forwardRef<typeof m.button, MotionButtonProps>(
                     {[0, 1, 2].map((index) => (
                       <m.span
                         key={index}
-                        className="block h-1.5 w-1.5 rounded-full bg-foreground"
+                        className="block h-1.5 w-1.5 rounded-full bg-primary-foreground"
                         initial={{
                           y:
                             index === 0 ? "0%" : index === 1 ? "-50%" : "-100%",

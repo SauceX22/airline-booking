@@ -1,9 +1,12 @@
 import { unstable_noStore } from "next/cache";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { buttonVariants } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { BookTicketSection } from "@/app/(dashboard)/flights/[id]/flight-booking-section";
+import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 
@@ -35,8 +38,16 @@ export default async function FlightDetailsPage({
           isAdmin
             ? "Edit flight details"
             : "Reserve this flight for your next adventure."
-        }
-      />
+        }>
+        {isAdmin && (
+          <Link
+            prefetch
+            href={`/flights/${flight.id}/details`}
+            className={cn(buttonVariants())}>
+            Flight Details
+          </Link>
+        )}
+      </DashboardHeader>
       <BookTicketSection
         flight={flight}
         existingUserTickets={existingUserTickets}

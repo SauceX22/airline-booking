@@ -2,13 +2,10 @@ import Link from "next/link";
 import { type Flight, type Plane, type Ticket } from "@prisma/client";
 import { format } from "date-fns";
 import {
-  ArrowRightIcon,
   CircleArrowDown,
   CircleArrowRight,
-  MapPin,
   PlaneIcon,
   PlaneTakeoffIcon,
-  Star,
   TicketIcon,
 } from "lucide-react";
 
@@ -17,29 +14,19 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { auth } from "@/server/auth";
+import { cn, getFlightStats } from "@/lib/utils";
 
 interface FlightItemProps {
   flight: Flight & { Plane: Plane; Tickets: Ticket[] };
 }
 
 export async function FlightItem({ flight }: FlightItemProps) {
-  const session = await auth();
-
-  const seatsLeft =
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats +
-    flight.Plane.nFirstClassSeats -
-    // TODO make only the payed tickets count (i think)
-    flight.Tickets.length;
+  const { availableFreeSeats, isWaitlistOnly } = getFlightStats(flight);
 
   return (
     <Card className="flex min-h-80 w-full max-w-md flex-col items-stretch justify-start">
@@ -57,7 +44,7 @@ export async function FlightItem({ flight }: FlightItemProps) {
           variant="secondary"
           className="pointer-events-none w-fit select-none gap-2 text-base font-medium text-muted-foreground">
           <TicketIcon className="h-4 w-4" />
-          {seatsLeft} seats left
+          {availableFreeSeats} seats left
         </Badge>
       </CardHeader>
       <Separator className="my-4" />
@@ -114,8 +101,13 @@ export async function FlightItem({ flight }: FlightItemProps) {
       <CardFooter className="mt-auto">
         <Link
           href={`/flights/${flight.id}`}
-          className={cn(buttonVariants(), "w-full")}>
-          Book now
+          className={cn(
+            buttonVariants({
+              variant: isWaitlistOnly ? "outline" : "default",
+            }),
+            "w-full"
+          )}>
+          {isWaitlistOnly ? "Book Waitlist Tickets" : "Book Ticket"}
         </Link>
       </CardFooter>
     </Card>

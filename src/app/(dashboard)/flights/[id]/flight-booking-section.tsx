@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  Flight,
-  PaymentTransaction,
-  Plane,
-  SeatClass,
-  Ticket,
-} from "@prisma/client";
+import type { Flight, PaymentTransaction, Plane, Ticket } from "@prisma/client";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { format } from "date-fns";
 import {
@@ -46,7 +40,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -63,6 +57,7 @@ import {
   cn,
   generateAllPossibleSeats,
   generateRandomSeat,
+  getFlightStats,
   getSeatClassSeatCount,
 } from "@/lib/utils";
 import { newBookingFormSchema } from "@/lib/validations/general";
@@ -80,58 +75,10 @@ export function BookTicketSection({
   existingUserTickets,
 }: BookTicketSectionProps) {
   const { data: session } = useSession();
+  const isAdmin = session?.user.role === "ADMIN";
 
-  const totalPlaneSeats =
-    flight.Plane.nFirstClassSeats +
-    flight.Plane.nEconomySeats +
-    flight.Plane.nBusinessSeats;
-  const usedSeats = flight.Tickets.map((ticket) => ticket.seat);
-
-  const newBookingForm = useForm<FormData>({
-    resolver: zodResolver(newBookingFormSchema),
-    mode: "onBlur",
-    defaultValues: {
-      passengers: [
-        {
-          name: session?.user.name ?? "Passenger 1",
-          email: session?.user.email ?? "passenger.1@example.com",
-          seat: generateRandomSeat({
-            planeSeats: flight.Plane.nEconomySeats,
-            usedSeats,
-          }),
-          seatClass: "ECONOMY",
-        },
-      ],
-    },
-  });
-  const {
-    handleSubmit,
-    register,
-    watch,
-    formState: { errors },
-  } = newBookingForm;
-
-  const passengerFields = useFieldArray({
-    control: newBookingForm.control,
-    name: "passengers",
-    rules: {
-      minLength: 1,
-      maxLength: 10 - existingUserTickets.length,
-      validate: (value) => {
-        if (value.length < 1) {
-          return "You must have at least one passenger";
-        }
-        if (value.length > 10 - existingUserTickets.length) {
-          return "You can only have 10 tickets per flight";
-        }
-        return true;
-      },
-    },
-  });
-
-  const path = usePathname();
-  const router = useRouter();
-  const apiUtils = api.useUtils();
+  const { totalPlaneSeats, usedSeats, availableFreeSeats, isWaitlistOnly } =
+    useMemo(() => getFlightStats(flight), [flight]);
 
   const { mutateAsync: bookTickets, isLoading } =
     api.ticket.createTickets.useMutation({
@@ -151,6 +98,71 @@ export function BookTicketSection({
         router.refresh();
       },
     });
+  const { mutateAsync: bookWaitlistTickets, isLoading: isWaitlistLoading } =
+    api.ticket.createWaitlistTickets.useMutation({
+      onError(err) {
+        toast.error("Something went wrong.", {
+          description: err.message,
+        });
+      },
+      async onSuccess(data, variables, context) {
+        toast.success("Tickets booked successfully!", {
+          description: "The tickets have been successfully booked.",
+        });
+
+        await apiUtils.ticket.invalidate();
+        await revalidatePathCache(path);
+        router.push("/tickets");
+        router.refresh();
+      },
+    });
+
+  const newBookingForm = useForm<FormData>({
+    resolver: zodResolver(newBookingFormSchema),
+    mode: "onBlur",
+    defaultValues: {
+      passengers: [
+        {
+          name: session?.user.name ?? "Passenger 1",
+          email: session?.user.email ?? "passenger.1@example.com",
+          seat: generateRandomSeat({
+            planeSeats: flight.Plane.nEconomySeats,
+            usedSeats,
+          }),
+          seatClass: "ECONOMY",
+        },
+      ],
+    },
+    disabled: isLoading,
+  });
+  const {
+    handleSubmit,
+    register,
+    watch,
+    formState: { errors },
+  } = newBookingForm;
+
+  const passengerFields = useFieldArray({
+    control: newBookingForm.control,
+    name: "passengers",
+    rules: {
+      minLength: 1,
+      maxLength: isAdmin ? availableFreeSeats : 10 - existingUserTickets.length,
+      validate: (value) => {
+        if (value.length < 1) {
+          return "You must have at least one passenger";
+        }
+        if (value.length > 10 - existingUserTickets.length) {
+          return "You can only have 10 tickets per flight";
+        }
+        return true;
+      },
+    },
+  });
+
+  const path = usePathname();
+  const router = useRouter();
+  const apiUtils = api.useUtils();
 
   const watchPassengers = watch("passengers");
 
@@ -168,6 +180,12 @@ export function BookTicketSection({
           .join("\n"),
       });
     }
+    if (isWaitlistOnly) {
+      return await bookWaitlistTickets({
+        flightId: flight.id,
+        passengers: data.passengers,
+      });
+    }
     await bookTickets({
       flightId: flight.id,
       passengers: data.passengers,
@@ -179,8 +197,9 @@ export function BookTicketSection({
       <Form {...newBookingForm}>
         <form className="col-span-1 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Passengers</h2>
+            <div className="text-2xl font-semibold">Passengers</div>
             <Button
+              disabled={isLoading}
               onClick={(e) => {
                 e.preventDefault();
                 if (
@@ -211,12 +230,17 @@ export function BookTicketSection({
                 `passengers.${index}.seatClass`
               );
               return (
-                <section key={field.id} className="p-1">
+                <div key={field.id} className="p-1">
                   <div className="flex flex-col items-start justify-start gap-2">
                     <div className="flex w-full items-start justify-stretch gap-2">
                       <FormField
-                        {...register(`passengers.${index}.name`)}
+                        {...{
+                          ...register(`passengers.${index}.name`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.name`}
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="name">Name</FormLabel>
@@ -228,7 +252,6 @@ export function BookTicketSection({
                                 autoComplete="name"
                                 autoCorrect="off"
                                 placeholder="Enter passenger name"
-                                disabled={isLoading}
                                 {...field}
                               />
                             </FormControl>
@@ -239,8 +262,13 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.email`)}
+                        {...{
+                          ...register(`passengers.${index}.email`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.email`}
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="email">Email</FormLabel>
@@ -252,7 +280,6 @@ export function BookTicketSection({
                                 autoComplete="email"
                                 autoCorrect="off"
                                 placeholder="Enter your email"
-                                disabled={isLoading}
                                 {...field}
                               />
                             </FormControl>
@@ -263,9 +290,14 @@ export function BookTicketSection({
                         )}
                       />
                       <FormField
-                        {...register(`passengers.${index}.seatClass`)}
+                        {...{
+                          ...register(`passengers.${index}.seatClass`),
+                          ref: null,
+                        }}
                         control={newBookingForm.control}
+                        name={`passengers.${index}.seatClass`}
                         defaultValue="ECONOMY"
+                        disabled={isLoading}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel htmlFor="seat-class">
@@ -301,6 +333,7 @@ export function BookTicketSection({
                         size="icon"
                         variant="destructive"
                         className="h-[4.5rem] shrink-0 grow-0"
+                        disabled={isLoading}
                         onClick={(e) => {
                           e.preventDefault();
                           passengerFields.remove(index);
@@ -327,8 +360,12 @@ export function BookTicketSection({
                               : "bg-accent"
                         )}>
                         <FormField
-                          {...register(`passengers.${index}.seat`)}
+                          {...{
+                            ...register(`passengers.${index}.seat`),
+                            ref: null,
+                          }}
                           control={newBookingForm.control}
+                          disabled={isLoading}
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
@@ -355,6 +392,7 @@ export function BookTicketSection({
                                             "group relative hover:bg-background/60 [&[data-state=checked]]:bg-destructive/90"
                                           )}
                                           disabled={
+                                            isLoading ||
                                             usedSeats.includes(seat) ||
                                             watchPassengers
                                               .map(
@@ -373,7 +411,7 @@ export function BookTicketSection({
                                 </ScrollArea>
                               </FormControl>
                               <FormMessage>
-                                {errors.passengers?.[0]?.seat?.message}
+                                {errors.passengers?.[index]?.seat?.message}
                               </FormMessage>
                             </FormItem>
                           )}
@@ -381,7 +419,7 @@ export function BookTicketSection({
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
-                </section>
+                </div>
               );
             })}
           </ScrollArea>
@@ -389,7 +427,7 @@ export function BookTicketSection({
       </Form>
       <div className="col-span-1 h-fit space-y-6 rounded-lg bg-accent p-6">
         <div>
-          <h2 className="mb-4 text-2xl font-bold">Flight Details</h2>
+          <div className="mb-4 text-2xl font-bold">Flight Details</div>
           <div className="mt-2 space-y-2">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 font-medium text-muted-foreground">
@@ -467,7 +505,15 @@ export function BookTicketSection({
                       {field.name}
                     </span>
                     <span className="text-lg font-semibold capitalize text-muted-foreground">
-                      {field.seatClass.replace("CLASS", " Class").toLowerCase()}
+                      {field.seatClass
+                        ?.toString()
+                        .replace("CLASS", "Class")
+                        .toLowerCase()
+                        ? field.seatClass
+                            .toString()
+                            .replace("CLASS", "Class")
+                            .toLowerCase()
+                        : field.seatClass}
                     </span>
                   </div>
                 ))
@@ -480,7 +526,7 @@ export function BookTicketSection({
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold">Total Cost</h2>
+          <div className="text-xl font-bold">Total Cost</div>
           <div className="mt-2 space-y-2">
             <div className="flex items-start justify-between">
               <span className="flex items-center justify-start gap-2 font-medium text-muted-foreground">
@@ -530,11 +576,13 @@ export function BookTicketSection({
           <Button
             className="w-full border-background"
             size="lg"
+            variant={isWaitlistOnly ? "outline" : "default"}
+            disabled={isLoading}
             onClick={async (e) => {
               e.preventDefault();
               await newBookingForm.handleSubmit((data) => onSubmit(data))();
             }}>
-            Book Ticket
+            {isWaitlistOnly ? "Book Waitlist Tickets" : "Book Ticket"}
           </Button>
         </div>
       </div>
