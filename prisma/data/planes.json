@@ -1,5 +1,15 @@
 [
   {
+    "id": "bfcc0ed7-f7a3-57fb-8d53-441ccfadfc99",
+    "name": "Boeing 757",
+    "nEconomySeats": 20,
+    "nBusinessSeats": 8,
+    "nFirstClassSeats": 4,
+    "type": "Narrow-body",
+    "lastMaintenanceDate": "2024-03-15T00:00:00Z",
+    "firstFlightDate": "2008-04-09T00:00:00Z"
+  },
+  {
     "id": "49b7a1e2-86ba-5278-b85c-020dd5e2b7f8",
     "name": "Boeing 737",
     "nEconomySeats": 150,
