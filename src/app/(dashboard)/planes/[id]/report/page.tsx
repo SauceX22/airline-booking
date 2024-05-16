@@ -214,7 +214,7 @@ export default async function PlaneReportPage({
               </Table>
             </CardContent>
           </Card>
-          <Card className="bg-destructive">
+          <Card>
             <CardHeader>
               <CardTitle>Waitlisted Passengers</CardTitle>
             </CardHeader>
