@@ -33,6 +33,9 @@ const config = {
       {
         hostname: "plus.unsplash.com",
       },
+      {
+        hostname: "drive.google.com",
+      },
     ],
     dangerouslyAllowSVG: true,
   },
