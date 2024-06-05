@@ -41,7 +41,7 @@ Access our live demo with the following credentials:
   - Password: `123456`
 
 You can also register new users with fake emails as per the requirements, these are simply starter accounts.
-Demo available at [**This Link**](https://airline-booking-saucex22.vercel.app/home)
+Demo available at [**This Link**](https://airlines.saucex.cc/) / [**Or This Link**](https://airline-booking-mu.vercel.app/home)
 
 **Note: The credentials above are only for demo purposes, and are not real emails that you can contact.**
 
