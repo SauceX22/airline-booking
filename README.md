@@ -1,31 +1,36 @@
-# React Bike Rentals 🏍️
+# React Flight Booking ✈️
 
 ## Overview
 
-React Bike Rentals is a dynamic web application designed to facilitate the process of renting bikes. Built with the T3 Stack, this project leverages a suite of modern technologies to deliver a seamless and intuitive user experience.
-The application caters to two user roles: **Admin** and **User**, each with distinct functionalities tailored to their needs.
+React Flight Booking is a dynamic web application designed to streamline the process of booking flight tickets. Constructed with the T3 Stack, this project harnesses modern technologies to deliver a seamless and user-friendly experience. The application caters to two primary user roles: **Admin** and **User**, each equipped with distinct functionalities tailored to their requirements.
+
+Flight searching functionality is managed within the system's backend, enabling users to search for flights based on parameters like dates, destination, and source city. Additionally, passengers can book available seats directly or be placed on a waitlist according to the specified limits of the ticket class, with all processes handled seamlessly in the backend. 
+
+Ticket reuse after a missed flight is determined by backend calculations, considering 90 days from the flight date to ascertain passenger eligibility. Fines for missed flights or cancellations are imposed, with specific amounts added to a passenger's fine attribute in the system. Notifications, including alerts for booked seats or successful ticket purchases, are implemented in the backend without requiring direct database storage. 
 
 ## Features
 
 ### General
 
-- React-based (using NextJS) frontend for a responsive, user-friendly interface.
+- React-based (using Next.js) frontend/backend for a responsive and intuitive interface.
 - Comprehensive user authentication system.
-- NextJS hosted on Vercel and database on Railyway.
+- Next.js hosted on Vercel and PostgreSQL database hosted on Railway.
 
-### For Managers
+### For Administrators
 
-- CRUD operations on bikes and user profiles.
-- Oversight on bike reservations, including details like the user and the rental period.
+- CRUD operations on flights and user profiles.
+- Oversight on booked tickets and seats, including details such as username, email, and payment status.
 - Management of user roles and permissions.
 
 ### For Users
 
-- Browse available bikes for specific dates.
-- Advanced filters based on model, color, location, or rating.
-- Option to reserve bikes for specified durations.
-- Ability to rate bikes on a scale of 1 to 5.
-- Flexibility to cancel reservations.
+- Browse available flights for specific dates.
+- Search for flights from source to destination.
+- Book tickets with various payment plans.
+- Select specific seats and classes for multiple passengers at once.
+- Flexibility to cancel tickets.
+- Group booking for multiple passengers.
+- Flexible payment options.
 
 ## Online Demo 💻
 
@@ -81,7 +86,7 @@ We welcome contributions and feedback on our project. Please visit our [GitHub r
 
 ## Deployment
 
-This project is preconfigured for deployment on [Vercel](https://vercel.com) with database hosting on [Railway](https://railway.app). Follow the deployment instructions specific to your chosen platform to get React Bike Rentals live.
+This project is preconfigured for deployment on [Vercel](https://vercel.com) with PostgreSQL database hosting on [Railway](https://railway.app). Follow the deployment instructions specific to your chosen platform to get React Flight Booking live.
 
 ## Learn More
 
